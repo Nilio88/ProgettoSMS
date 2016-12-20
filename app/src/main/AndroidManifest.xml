@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sms1516.porcelli.daniele.wichat">
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission
+        android:name="android.permission.ACCESS_WIFI_STATE"
+        android:required="true" />
+    <uses-permission
+        android:name="android.permission.CHANGE_WIFI_STATE"
+        android:required="true" />
+    <uses-permission
+        android:name="android.permission.INTERNET"
+        android:required="true" />
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE"
+        android:required="true" />
+    <uses-permission
+        android:name="android.permission.CHANGE_NETWORK_STATE"
+        android:required="true" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-feature android:name="android.hardware.wifi.direct" android:required="true"/>
+
+
+    <!-- Questi permessi servono per leggere il nome del proprietario del dispositivo -->
+    <uses-permission
+        android:name="android.permission.READ_PROFILE"
+        android:required="true" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ConversationListActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+
+        </activity>
+
+        <activity
+            android:name=".ConversationDetailActivity"
+            android:label="@string/title_conversation_detail"
+            android:parentActivityName=".ConversationListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sms1516.porcelli.daniele.wichat.ConversationListActivity" />
+        </activity>
+
+        <activity
+            android:name=".SplashScreen"
+            android:theme="@style/FullScreen">
+        </activity>
+
+        <receiver
+            android:name="com.sms1516.porcelli.daniele.wichat.BootReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <!-- Intent di broadcast lanciato da Android quando si avvia dallo stato spento. -->
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <!-- Intent di broadcast lanciato da Android quando ha finito di eseguire il riavvio del dispositivo (solo alcuni dispositivi inviano quest'altro tipo di intent) -->
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".WiChatService"
+            android:exported="true"></service>
+
+    </application>
+</manifest>

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">WiChat</string>
+    <string name="title_conversation_detail">Conversation Detail</string>
+    <string name="button_scan">SEARCH FOR DEVICES</string>
+    <string name="text_empty">No devices found. Refresh to perform discovery of devices.</string>
+    <string name="get_file_button">Launch Gallery</string>
+    <string name="message_detail">Select a device to open the Chat.</string>
+    <string name="contact_transition_name">contact</string>
+    <string name="send_message">sendMessage</string>
+    <string name="msg_wifi_turned_off">Wi-Fi is off!</string>
+    <string name="icona_utente">Icona utente</string>
+
+</resources>

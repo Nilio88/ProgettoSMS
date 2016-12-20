@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://shemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ConversationListActivity" >
+
+    <item
+        android:id="@+id/delete_cronology"
+        android:title="Cancella messaggi"
+        app:showAsAction="always">
+    </item>
+</menu>

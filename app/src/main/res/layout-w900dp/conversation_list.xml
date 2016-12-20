@@ -1,0 +1,56 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:baselineAligned="false"
+    android:divider="?android:attr/dividerHorizontal"
+    android:orientation="horizontal"
+    tools:context="com.sms1516.porcelli.daniele.wichat.ConversationListActivity"
+    android:showDividers="middle"
+    android:background="@color/activity_background">
+
+    <!--
+    This layout is a two-pane layout for the Contacts
+    master/detail flow.
+    
+    -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/activity_background">
+
+        <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/conversation_list"
+            android:name="com.sms1516.porcelli.daniele.wichat.ConversationListFragment"
+            android:layout_width="@dimen/item_width"
+            android:layout_height="match_parent"
+            app:layoutManager="LinearLayoutManager"
+            tools:context="com.sms1516.porcelli.daniele.wichat.ConversationListActivity"
+            android:background="@color/activity_background" />
+
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/conversation_detail_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text= "@string/text_empty"
+            android:id="@+id/messageDetail"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+
+
+</LinearLayout>

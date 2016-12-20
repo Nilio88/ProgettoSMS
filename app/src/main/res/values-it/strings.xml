@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WiChat</string>
+    <string name="contact_action_label">Info contatto</string>
+    <string name="button_scan">CERCA DISPOSITIVI</string>
+    <string name="text_empty">Nessun dispositivo trovato. Ricarica la pagina per eseguire il rilevamento dei dispositivi.</string>
+    <string name="message_detail">Seleziona un dispositivo per aprire la Chat.</string>
+    <string name="msg_wifi_turned_off">Il Wi-Fi è spento!</string>
+
+</resources>
