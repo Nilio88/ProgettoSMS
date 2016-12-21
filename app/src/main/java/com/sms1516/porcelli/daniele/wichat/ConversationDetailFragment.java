@@ -184,9 +184,9 @@ public class ConversationDetailFragment extends Fragment {
         mMessageEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(chatRoomRecyclerViewAdapter.getItemCount() > 1) {
+                if (chatRoomRecyclerViewAdapter.getItemCount() > 1) {
                     //scrolling alla fine della recyclerview
-                    Log.i(LOG_TAG,"Ha cliccato l'EditText");
+                    Log.i(LOG_TAG, "Ha cliccato l'EditText");
                     recyclerView.smoothScrollToPosition(chatRoomRecyclerViewAdapter.getItemCount() - 1);
                 }
             }
@@ -248,6 +248,14 @@ public class ConversationDetailFragment extends Fragment {
         SharedPreferences.Editor editor = mMessagesReceivedPrefs.edit();
         editor.putInt(mContactMacAddress, mNumMessaggi);
         editor.apply();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        //Svuota la memoria dei messaggi
+        Message.deleteAllMessages();
     }
 
     @Override
@@ -367,6 +375,7 @@ public class ConversationDetailFragment extends Fragment {
                 //ha spento il dispositivo, etc...).
 
                 String disconnectedDevice = intent.getStringExtra(CostantKeys.ACTION_CONTACT_DISCONNECTED_FOR_CONTACTS_EXTRA);
+                //L'intent ACTION_CONTACT_DISCONNECTED non contiene alcun indirizzo MAC.
 
                 String macDisconnected = disconnectedDevice;
                 int min = disconnectedDevice.length();
@@ -401,9 +410,12 @@ public class ConversationDetailFragment extends Fragment {
                 //alquanto brusca...
                 if (!connesso) {
 
-                    String disconnectedDevice = intent.getStringExtra(CostantKeys.ACTION_CONTACT_DISCONNECTED_FOR_CONTACTS_EXTRA);
+                    //Non c'è bisogno di recuperare l'indirizzo MAC del dispositivo disconnesso poiché il Wi-Fi Direct
+                    //permette la connessione con un solo dispositivo alla volta.
+                    //String disconnectedDevice = intent.getStringExtra(CostantKeys.ACTION_CONTACT_DISCONNECTED_FOR_CONTACTS_EXTRA);
 
-                    String macDisconnected = disconnectedDevice;
+                    //ATTENZIONE: Qui si verifica un NullPointerException.
+                    /*String macDisconnected = disconnectedDevice;
                     int min = disconnectedDevice.length();
                     for(DummyContent.Device d : DummyContent.ITEMS) {
                         int similarity = Utils.getSimilarity(disconnectedDevice, d.mac);
@@ -411,8 +423,10 @@ public class ConversationDetailFragment extends Fragment {
                             min = similarity;
                             macDisconnected = d.mac;
                         }
-                    }
-                    DummyContent.changeStateConnection(macDisconnected, DummyContent.Device.DISCONNECTED);
+                    }*/
+
+                    //Nel codice sottostante ho sostituito le occorrenze di macDisconnected con mContactMacAddress
+                    DummyContent.changeStateConnection(mContactMacAddress, DummyContent.Device.DISCONNECTED);
                     Toast.makeText(context, "Il contatto non è più connesso", Toast.LENGTH_LONG).show();
                     linearLayoutChat.setVisibility(View.GONE);
                     snackbar.show();

@@ -31,26 +31,31 @@ public class SplashScreen extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         decorView.setSystemUiVisibility(uiOptions);
 
+        //Thread per il timer
+        Thread timerThread = new Thread() {
+
+            @Override
+            public void run() {
+                //Mette in pausa lo splash screen e avvia l'activity principale
+                try {
+                    sleep(PAUSA);
+                }
+
+                catch (InterruptedException ex) {
+                    Log.e(TAG_LOG, ex.toString());
+                }
+
+                finally {
+
+                    startActivity(new Intent(SplashScreen.this, ConversationListActivity.class));
+                    finish();
+                }
+            }
+        };
+
+        //Avvia il thread
+        timerThread.start();
+
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        //Mette in pausa lo splash screen e avvia l'activity principale
-        try {
-            Thread.sleep(PAUSA);
-            startActivity(new Intent(this, ConversationListActivity.class));
-        }
-
-        catch (InterruptedException ex) {
-            Log.e(TAG_LOG, ex.toString());
-        }
-
-        finally {
-
-            //In ogni caso, termina l'activity dello splash screen
-            finish();
-        }
-    }
 }

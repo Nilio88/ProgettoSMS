@@ -1,6 +1,5 @@
 package com.sms1516.porcelli.daniele.wichat;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -22,7 +21,6 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.content.BroadcastReceiver;
 import android.support.v4.content.LocalBroadcastManager;
 import android.database.Cursor;
-import android.view.View;
 
 import java.io.EOFException;
 import java.util.HashMap;
@@ -354,7 +352,9 @@ public class WiChatService extends Service {
             //quindi notifica l'activity/fragment del risultato.
             Intent contactAvailabilityIntent = new Intent(CostantKeys.ACTION_CONTACT_AVAILABILITY);
             contactAvailabilityIntent.putExtra(CostantKeys.ACTION_CONTACT_AVAILABILITY_EXTRA, conversingWith != null);
-            contactAvailabilityIntent.putExtra(CostantKeys.ACTION_CONTACT_DISCONNECTED_FOR_CONTACTS_EXTRA, conversingWith);
+
+            //La linea di codice sottostante non è di alcuna utilità.
+            //contactAvailabilityIntent.putExtra(CostantKeys.ACTION_CONTACT_DISCONNECTED_FOR_CONTACTS_EXTRA, conversingWith);
             mLocalBroadcastManager.sendBroadcast(contactAvailabilityIntent);
         }
 

@@ -116,7 +116,7 @@ public class ConversationListActivity extends AppCompatActivity
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
         mContactsMessagesReceiver = new ContactsMessagesReceiver();
         mMessagesReceivedPrefs = getSharedPreferences(CostantKeys.RECEIVED_MESSAGES_PREFS, MODE_PRIVATE);
-        mMessagesStore = MessagesStore.getInstance();
+
 
 
         mIntentFilter = new IntentFilter();
@@ -136,6 +136,22 @@ public class ConversationListActivity extends AppCompatActivity
         if (savedInstanceState != null) {
             mFirstRun = savedInstanceState.getBoolean(KEY_FIRSTRUN);
         }
+
+        //Avvia WiChatService se non è in esecuzione.
+        if (mFirstRun) {
+            Class wiChatServiceClass = WiChatService.class;
+
+            if (!isMyServiceRunning(wiChatServiceClass)) {
+
+                //Avvia WiChatService.
+                Intent startWiChatServiceIntent = new Intent(this, wiChatServiceClass);
+                MessagesStore.initialize(this);
+                startService(startWiChatServiceIntent);
+            }
+        }
+
+        //Recupera l'istanza di MessagesStore.
+        mMessagesStore = MessagesStore.getInstance();
 
         if (findViewById(R.id.conversation_detail_container) != null) {
             // The detail container view will be present only in the
@@ -186,6 +202,10 @@ public class ConversationListActivity extends AppCompatActivity
             WiChatService.whoIsConnected(this);
             mFirstRun = false;
         }
+
+        //Aggiorna il numero di messaggi ricevuti e non ancora letti
+        //da parte del dispositivo remoto al quale si è connessi.
+        updateUnreadMessages(connectedTo);
 
         Log.i(LOG_TAG, "Avviata la scansione dei dispositivi.");
 
@@ -600,7 +620,7 @@ public class ConversationListActivity extends AppCompatActivity
                     }
 
                     //Controlla se ci sono messaggi ricevuti da questo contatto ma non ancora letti.
-                    Log.i(LOG_TAG, "Recupero i messaggi ricevuti e letti nelle shared preferences sotto la chiave: " + device.deviceAddress);
+                    /*Log.i(LOG_TAG, "Recupero i messaggi ricevuti e letti nelle shared preferences sotto la chiave: " + device.deviceAddress);
 
                     int numMessaggi = mMessagesReceivedPrefs.getInt(device.deviceAddress, 0);
                     Log.i(LOG_TAG, "Numero di messaggi ricevuti da questo contatto e letti: " + numMessaggi);
@@ -614,8 +634,11 @@ public class ConversationListActivity extends AppCompatActivity
                     if (nuoviMessaggi > 0) {
                         DummyContent.updateUnreadCount(device.deviceAddress, nuoviMessaggi);
                     }
-                    simpleItemRecyclerViewAdapter.notifyDataSetChanged();
+                    simpleItemRecyclerViewAdapter.notifyDataSetChanged();*/
                 }
+
+                //Controlla se ci sono messaggi ricevuti da questo contatto ma non ancora letti.
+                updateUnreadMessages(device.deviceAddress);
 
 
             } else if (action.equals(CostantKeys.ACTION_CONTACT_NOT_AVAILABLE)) {
@@ -876,6 +899,32 @@ public class ConversationListActivity extends AppCompatActivity
         mStartTime = SystemClock.uptimeMillis();
         final android.os.Message closeProgressBar = mHandler.obtainMessage(CLOSE_PROGRESS_BAR);
         mHandler.sendMessageAtTime(closeProgressBar, mStartTime + MAX_WAIT_PROGRESS_BAR);
+    }
+
+    /**
+     * Aggiorna il numero di messaggi ricevuti e non ancora letti da parte
+     * del dispositivo remoto.
+     *
+     * @param device L'indirizzo MAC del dispositivo remoto di cui si vuole verificare
+     *               la presenza di messaggi ricevuti e non ancora letti.
+     */
+    private void updateUnreadMessages(String device) {
+        //Controlla se ci sono messaggi ricevuti da questo contatto ma non ancora letti.
+        Log.i(LOG_TAG, "Recupero i messaggi ricevuti e letti nelle shared preferences sotto la chiave: " + device);
+
+        int numMessaggi = mMessagesReceivedPrefs.getInt(device, 0);
+        Log.i(LOG_TAG, "Numero di messaggi ricevuti da questo contatto e letti: " + numMessaggi);
+
+        int messaggiCronologia = mMessagesStore.getMessagesCount(device);
+        Log.i(LOG_TAG, "Numero di messaggi presenti nel messagesStore per questo contatto: " + messaggiCronologia);
+
+        int nuoviMessaggi = messaggiCronologia - numMessaggi;
+        Log.i(LOG_TAG, "Messaggi non ancora letti da questo contatto: " + nuoviMessaggi);
+
+        if (nuoviMessaggi > 0) {
+            DummyContent.updateUnreadCount(device, nuoviMessaggi);
+        }
+        simpleItemRecyclerViewAdapter.notifyDataSetChanged();
     }
 
 }
