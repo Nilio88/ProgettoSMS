@@ -2,21 +2,26 @@
 <resources>
     <color name="colorPrimary">#2196f3</color>
     <color name="colorPrimaryDark">#1976D2</color>
-    <color name="colorPrimariLight">#BBDEFB</color>
+    <color name="colorPrimaryLight">#BBDEFB</color>
     <color name="colorAccent">#FF80AB</color>
     <color name="splashScreenBackground">#0574CC</color>
     <color name="list_divider">#DEDEDE</color>
     <color name="bg_bubble_self">#E1E1E1</color>
     <color name="linear_layout_color">#e8eaf6</color>
 
-
-    <!-- State list colors -->
-    <color name="contact_pressed_color">#CFD8DC</color>
     <color name="contact_connected_color">#C5CAE9</color>
     <color name="activity_background">#fafafa</color>
 
+    <!-- State list colors -->
+    <color name="contact_pressed_color">@color/colorPrimaryLight</color>
+    <color name="contact_not_pressed_color">@color/activity_background</color>
+    <color name="contact_focused_color">@color/colorPrimary</color>
 
     <!-- State list drawable -->
     <drawable name="contact_pressed_drawable">
         @color/contact_pressed_color</drawable>
+    <drawable name="contact_not_pressed_drawable">
+        @color/contact_not_pressed_color</drawable>
+    <drawable name="contact_focused_drawable">
+        @color/contact_focused_color</drawable>
 </resources>
