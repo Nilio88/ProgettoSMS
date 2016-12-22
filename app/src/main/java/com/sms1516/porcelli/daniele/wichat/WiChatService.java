@@ -1024,7 +1024,10 @@ public class WiChatService extends Service {
                             if (message != null) {
 
                                 //Notifica attraverso una Notification che è stato ricevuto un nuovo messaggio
-                                tools.notificationMsg(context, ConversationListActivity.class, message.getText());
+                                //NOTA: Ho spostato questa linea di codice più sotto, dentro l'else if di mContactsListener e
+                                //dentro l'else. In questo modo la notifica verrà creata solo se l'activity/fragment
+                                //della conversazione non è in esecuzione.
+                                //tools.notificationMsg(context, ConversationListActivity.class, message.getText());
 
                                 /*if (conversingWith == null) {
                                     conversingWith = message.getSender();
@@ -1060,11 +1063,15 @@ public class WiChatService extends Service {
                                     //Salva il messaggio in memoria cosicché l'activity/fragment interessata
                                     //potrà recuperarlo e mostrarlo all'utente
                                     mMessagesStore.saveMessage(message);
+
+                                    tools.notificationMsg(context, ConversationListActivity.class, message.getText());
                                 }
                                 else {
 
                                     //Salva il messaggio nella memoria interna
                                     mMessagesStore.saveMessage(message);
+
+                                    tools.notificationMsg(context, ConversationListActivity.class, message.getText());
                                 }
                                 //}
                             }

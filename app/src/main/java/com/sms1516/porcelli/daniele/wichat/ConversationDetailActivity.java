@@ -1,10 +1,12 @@
 package com.sms1516.porcelli.daniele.wichat;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
+import android.transition.ChangeBounds;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -31,6 +33,15 @@ public class ConversationDetailActivity extends AppCompatActivity {
         }
         Intent intent = getIntent();
         contactName.setText(intent.getCharSequenceExtra(CostantKeys.ACTION_START_CONVERSATION_ACTIVITY_EXTRA_NAME));
+
+        //Imposta la transizione animata di entrata dell'activity se l'app
+        //viene eseguita su un dispositivo con Android 5.0 o superiore.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setSharedElementEnterTransition(new ChangeBounds());
+
+            //Rimuove l'ombra dell'elevazione dalla action bar.
+            getSupportActionBar().setElevation(0);
+        }
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity

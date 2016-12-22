@@ -7,19 +7,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.annotation.ColorInt;
+import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.transition.ChangeBounds;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -28,7 +27,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -93,6 +91,12 @@ public class ConversationListActivity extends AppCompatActivity
         setContentView(R.layout.activity_conversation_list);
 
         Log.i(LOG_TAG, "Sono in onCreate() della MainActivity.");
+
+        //Imposta la transizione animata tra activity se quest'app viene
+        //eseguita su un dispositivo Android 5.0 o più recenti.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setSharedElementExitTransition(new ChangeBounds());
+        }
 
         noDeviceText = (TextView) findViewById(R.id.textEmptyList);
         messageDetail = (TextView) findViewById(R.id.messageDetail);

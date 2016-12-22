@@ -32,6 +32,7 @@
          android:orientation="horizontal"
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
+         android:transitionName="@string/contact_transition_name"
          android:background="@color/colorPrimary">
 
           <ImageView
