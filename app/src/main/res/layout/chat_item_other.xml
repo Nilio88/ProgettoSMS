@@ -16,6 +16,7 @@
         android:textIsSelectable="true"
         android:background="@drawable/nuvoletta_destinatario"
         android:textSize="16sp"
+        android:alpha="1"
         android:textColor="@android:color/white" />
 
  <!--   <TextView

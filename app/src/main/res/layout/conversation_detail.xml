@@ -40,6 +40,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginLeft="16dp"
             android:lines="3"
+            android:alpha=".87"
             android:layout_height="wrap_content"
             android:layout_weight="3">
         </EditText>

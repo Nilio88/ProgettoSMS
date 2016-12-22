@@ -15,6 +15,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
         android:textIsSelectable="true"
+        android:alpha=".87"
         android:background="@drawable/nuvoletta_mittente"
         android:textSize="16sp" />
 

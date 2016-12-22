@@ -24,6 +24,8 @@ public class DummyContent {
      */
     public static final Map<String, Device> ITEM_MAP = new HashMap<String, Device>();
 
+    public static final String LOG_TAG = DummyContent.class.getName();
+
    /* private static final int COUNT = 25;
 
 

@@ -17,14 +17,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/text_size"
+        android:alpha =".87"
         android:layout_alignParentTop="true"/>
+
+    <ImageView
+        android:id="@+id/contact_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/id"
+        android:src="@drawable/ic_person_black_48dp" />
 
     <TextView
         android:id="@+id/contact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/id"
+        android:layout_toRightOf="@id/contact_icon"
         android:textSize="@dimen/text_size"
+        android:alpha=".87"
         android:layout_marginLeft="7dp"
         android:textStyle="bold" />
 
@@ -32,6 +41,7 @@
         android:id="@+id/num_news_messages"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:alpha="1"
         android:gravity="center"
         android:layout_alignParentRight="true"
         android:textColor="@android:color/white"
@@ -45,6 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/num_news_messages"
         android:textSize="@dimen/text_size"
+        android:alpha=".87"
         android:layout_marginRight="10dp"/>
 
 </RelativeLayout>

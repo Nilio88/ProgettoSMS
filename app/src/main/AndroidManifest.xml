@@ -20,6 +20,9 @@
         android:required="true" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <!-- Questo permesso è richiesto per alcuni dispositivi per dare il permesso all'app di far vibrare il dispositivo -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <uses-feature android:name="android.hardware.wifi.direct" android:required="true"/>
 
 

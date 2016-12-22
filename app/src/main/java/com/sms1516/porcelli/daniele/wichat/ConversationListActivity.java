@@ -203,13 +203,10 @@ public class ConversationListActivity extends AppCompatActivity
         //Se questa Activity è stata avviata per la prima volta,
         //avvia la scansione dei dispositivi nelle vicinanze.
         if (mFirstRun) {
-            WiChatService.whoIsConnected(this);
+            //WiChatService.whoIsConnected(this);
             mFirstRun = false;
         }
-
-        //Aggiorna il numero di messaggi ricevuti e non ancora letti
-        //da parte del dispositivo remoto al quale si è connessi.
-        updateUnreadMessages(connectedTo);
+        WiChatService.whoIsConnected(this);
 
         Log.i(LOG_TAG, "Avviata la scansione dei dispositivi.");
 
@@ -833,6 +830,18 @@ public class ConversationListActivity extends AppCompatActivity
                 connectedTo = intent.getStringExtra(CostantKeys.ACTION_CONTACT_CONNECTED_EXTRA);
                 progressBar.setVisibility(View.VISIBLE);
                 mIsDone = false;
+
+                if (connectedTo != null) {
+                    int min = connectedTo.length();
+                    for (DummyContent.Device d : DummyContent.ITEMS) {
+                        int similarity = Utils.getSimilarity(connectedTo, d.mac);
+                        if (similarity < min) {
+                            min = similarity;
+                            connectedTo = d.mac;
+                        }
+                    }
+                }
+
                 startTimeProgressBar();
                 WiChatService.discoverServices(context);
 
