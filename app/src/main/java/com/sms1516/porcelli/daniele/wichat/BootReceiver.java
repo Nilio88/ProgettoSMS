@@ -9,7 +9,7 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        //     String action = intent.getAction();
+
         final String LOG_TAG = BootReceiver.class.getName();
 
 
