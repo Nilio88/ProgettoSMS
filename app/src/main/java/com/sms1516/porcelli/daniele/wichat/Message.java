@@ -15,8 +15,8 @@ import java.util.Map;
  */
 public class Message implements Serializable {
 
-    public String sender;
-    public String text;
+    private String sender;
+    private String text;
 
     /**
      * An array of sample (dummy) items.

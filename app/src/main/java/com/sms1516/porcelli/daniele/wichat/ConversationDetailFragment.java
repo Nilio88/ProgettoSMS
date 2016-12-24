@@ -317,7 +317,7 @@ public class ConversationDetailFragment extends Fragment {
         @Override
         public void onBindViewHolder(ChatRoomRecyclerViewAdapter.ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.message.setText(mValues.get(position).text);
+            holder.message.setText(mValues.get(position).getText());
         }
 
         @Override

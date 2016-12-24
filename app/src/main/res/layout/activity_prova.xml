@@ -51,6 +51,7 @@
               android:layout_gravity="center"
               android:textColor="@android:color/white"
               android:textStyle="bold"
+              android:alpha="1"
               android:layout_marginLeft="2dp" />
          </LinearLayout>
 

@@ -337,7 +337,7 @@ public class MessagesStore {
         //Scandisce i file presenti nella directory base dell'applicazione.
         //Se trova un file, controlla se il suo nome è simile all'indirizzo MAC
         //del contatto di cui caricare la cronologia dei messaggi e, se è simile,
-        //memorizza i messaggi presenti in una lista che restituirà al metodo chiamate.
+        //memorizza i messaggi presenti in una lista che restituirà al metodo chiamante.
         //Se trova una directory, essa verrà ignorata. Se nessun file viene ritrovato,
         //verrà restituita una lista di messaggi vuota.
         File[] files = mHistoryPath.listFiles();
