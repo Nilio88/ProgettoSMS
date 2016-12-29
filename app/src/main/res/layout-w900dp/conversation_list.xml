@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,9 +10,14 @@
     android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
-    tools:context="com.sms1516.porcelli.daniele.wichat.ConversationListActivity"
     android:showDividers="middle"
-    android:background="@color/activity_background">
+    android:background="@color/activity_background"
+    tools:context="com.sms1516.porcelli.daniele.wichat.ConversationListActivity">
+
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="@dimen/item_width"
+        android:layout_height="match_parent"
+        android:background="@color/activity_background">
 
     <!--
     This layout is a two-pane layout for the Contacts
@@ -35,6 +42,21 @@
 
     </LinearLayout>
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabRefreshItemW900"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:src="@drawable/ic_autorenew_black_24dp"
+            app:fabSize="normal"
+            app:backgroundTint="@color/colorAccent"
+            app:backgroundTintMode="src_over"
+            app:rippleColor="#FF4081"/>
+
+
+    </android.support.design.widget.CoordinatorLayout>
 
     <FrameLayout
         android:id="@+id/conversation_detail_container"
@@ -50,7 +72,6 @@
             android:id="@+id/messageDetail"
             android:layout_gravity="center" />
     </FrameLayout>
-
 
 
 </LinearLayout>

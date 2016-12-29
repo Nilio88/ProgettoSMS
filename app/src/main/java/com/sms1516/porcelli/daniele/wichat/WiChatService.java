@@ -1,5 +1,6 @@
 package com.sms1516.porcelli.daniele.wichat;
 
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -91,6 +92,7 @@ public class WiChatService extends Service {
     private MessagesStore mMessagesStore;
     static boolean mWifiState = false;
     private Tools tools;
+    public NotificationManager notificationManager;
     private Context context;
 
     //Dizionario che conserva le coppie (indirizzo, nome) per l'associazione di un
@@ -261,7 +263,7 @@ public class WiChatService extends Service {
             //Invoca il metodo per disconnettere la connessione con il dispositivo
             //remoto attuale (se presente)
             if (conversingWith != null) {
-                Log.i(LOG_TAG, "Eseguo la disconnessione.");
+                Log.i(LOG_TAG, "Eseguo la disconnessione da: " + conversingWith);
                 Log.i(LOG_TAG, "Chiudo la ChatConnection.");
 
                 if (currentConnection != null) {
@@ -1045,6 +1047,10 @@ public class WiChatService extends Service {
 
                                 //Manda il messaggio all'activity/fragment interessata se è registrata
                                 if (mMessagesListener) {
+                                    notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                    notificationManager.notify(CostantKeys.NEW_MESSAGE_NOTIFICATION,
+                                            tools.notificationMsg(context, ConversationListActivity.class, message.getText()));
+                                    notificationManager.cancelAll();
                                     Intent intent = new Intent(CostantKeys.ACTION_SEND_MESSAGE);
                                     intent.putExtra(CostantKeys.ACTION_SEND_MESSAGE_EXTRA, message);
                                     mLocalBroadcastManager.sendBroadcast(intent);
@@ -1056,22 +1062,26 @@ public class WiChatService extends Service {
                                     //l'arrivo di un nuovo messaggio
                                     Intent intent = new Intent(CostantKeys.ACTION_SEND_MESSAGE_FOR_CONTACTS);
                                     intent.putExtra(CostantKeys.ACTION_SEND_MESSAGE_EXTRA, message);
-                                    tools.notificationMsg(context, ConversationListActivity.class, message.getText());
+
+                                    notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                    notificationManager.notify(CostantKeys.NEW_MESSAGE_NOTIFICATION,
+                                            tools.notificationMsg(context, ConversationListActivity.class, message.getText()));
+
                                     mLocalBroadcastManager.sendBroadcast(intent);
                                     Log.i(LOG_TAG, "Messaggio inviato all'activity dei contatti.");
 
                                     //Salva il messaggio in memoria cosicché l'activity/fragment interessata
                                     //potrà recuperarlo e mostrarlo all'utente
                                     mMessagesStore.saveMessage(message);
-
-                                    tools.notificationMsg(context, ConversationListActivity.class, message.getText());
                                 }
                                 else {
 
                                     //Salva il messaggio nella memoria interna
                                     mMessagesStore.saveMessage(message);
 
-                                    tools.notificationMsg(context, ConversationListActivity.class, message.getText());
+                                    notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                    notificationManager.notify(CostantKeys.NEW_MESSAGE_NOTIFICATION,
+                                            tools.notificationMsg(context, ConversationListActivity.class, message.getText()));
                                 }
                                 //}
                             }
@@ -1470,6 +1480,9 @@ public class WiChatService extends Service {
      * @param device  Indirizzo MAC del dispositivo a cui connettersi rappresentato in forma testuale.
      */
     public static void connectToClient(Context context, String device) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+
         Intent connectToClientIntent = new Intent(context, WiChatService.class);
         connectToClientIntent.setAction(ACTION_CONNECT_TO_CLIENT);
         connectToClientIntent.putExtra(ACTION_CONNECT_TO_CLIENT_EXTRA, device);

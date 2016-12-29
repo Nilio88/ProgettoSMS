@@ -2,6 +2,7 @@ package com.sms1516.porcelli.daniele.wichat;
 
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -74,10 +75,12 @@ public class ConversationListActivity extends AppCompatActivity
     private int posizione = 0;
 
     //Costanti e variabili per la chiusura della progressBar dopo un determinato tempo
-    private static final long MAX_WAIT_PROGRESS_BAR = 15000L; //Il tempo in cui la PB sarà chiusa non avendo rilevato nessun dispositivo
+    private static final long MAX_WAIT_PROGRESS_BAR = 10000L; //Il tempo in cui la PB sarà chiusa non avendo rilevato nessun dispositivo
     private static final int CLOSE_PROGRESS_BAR = 1;
     private long mStartTime;
     private boolean mIsDone = false;
+    private Tools tools;
+    private Dialog dialog;
 
     //Costante per il Log
     private static final String LOG_TAG = "WifiBroadcast";
@@ -98,10 +101,11 @@ public class ConversationListActivity extends AppCompatActivity
             getWindow().setSharedElementExitTransition(new ChangeBounds());
         }
 
+        tools = new Tools();
         noDeviceText = (TextView) findViewById(R.id.textEmptyList);
         messageDetail = (TextView) findViewById(R.id.messageDetail);
-        fab = (FloatingActionButton) findViewById(R.id.fabRefreshItem);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        fab = (FloatingActionButton) findViewById(R.id.fabRefreshItem);
         View recyclerView = findViewById(R.id.conversation_list);
         snackbar = Snackbar.make(findViewById(R.id.coordinatorLayoutMain),
                 R.string.msg_wifi_turned_off, Snackbar.LENGTH_INDEFINITE);
@@ -157,13 +161,16 @@ public class ConversationListActivity extends AppCompatActivity
         //Recupera l'istanza di MessagesStore.
         mMessagesStore = MessagesStore.getInstance();
 
+        fab.setVisibility(View.VISIBLE);
         if (findViewById(R.id.conversation_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
             // If this view is present, then the
             // activity should be in two-pane mode.
-            mTwoPane = true;
             noDeviceText.setVisibility(View.GONE);
+            fab.setVisibility(View.GONE);
+            fab = (FloatingActionButton) findViewById(R.id.fabRefreshItemW900);
+            mTwoPane = true;
         }
 
         if(!WiChatService.mWifiState) {
@@ -215,10 +222,11 @@ public class ConversationListActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if(DummyContent.ITEMS.isEmpty()) {
-            noDeviceText.setVisibility(View.VISIBLE);
-        } else {
+        if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
+            messageDetail.setText(R.string.text_empty);
             noDeviceText.setVisibility(View.GONE);
+        } else if(DummyContent.ITEMS.isEmpty() && !mTwoPane) {
+            noDeviceText.setVisibility(View.VISIBLE);
         }
         simpleItemRecyclerViewAdapter.notifyDataSetChanged();
         Log.i(LOG_TAG, "Sono in onResume() di MainActivity.");
@@ -227,10 +235,11 @@ public class ConversationListActivity extends AppCompatActivity
     @Override public void onRestart() {
         super.onRestart();
         Log.i(LOG_TAG, "Sono in onRestart() di MainActivity.");
-        if(DummyContent.ITEMS.isEmpty()) {
-            noDeviceText.setVisibility(View.VISIBLE);
-        } else {
+        if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
+            messageDetail.setText(R.string.text_empty);
             noDeviceText.setVisibility(View.GONE);
+        } else if(DummyContent.ITEMS.isEmpty() && !mTwoPane) {
+            noDeviceText.setVisibility(View.VISIBLE);
         }
         simpleItemRecyclerViewAdapter.notifyDataSetChanged();
     }
@@ -465,7 +474,6 @@ public class ConversationListActivity extends AppCompatActivity
         Log.i(LOG_TAG, "Sto per aggiungere il fragment di conversazione.");
 
         //Azzero il numero dei messaggi ricevuti dal contatto non ancora letti.
-
         DummyContent.updateUnreadCount(indirizzoMAC, DummyContent.Device.COUNT_DEFAULT);
         simpleItemRecyclerViewAdapter.notifyDataSetChanged();
 
@@ -529,6 +537,8 @@ public class ConversationListActivity extends AppCompatActivity
         Log.i(LOG_TAG, "Click sul contatto con cui comunicare.");
 
         //Inserisci qui il codice per avviare la progress bar
+        dialog = tools.launchRingDialog(context, "Connessione in corso...");
+        dialog.show();
 
         if (macAddress != null)
             WiChatService.connectToClient(this, macAddress);
@@ -648,7 +658,7 @@ public class ConversationListActivity extends AppCompatActivity
                 Log.i(LOG_TAG, "Il dispositivo con cui si vuole comunicare non è più disponibile.");
 
                 //Inserisci qui il codice per chiudere al progress bar
-
+                tools.closeRingDialog(dialog);
                 //Recupera l'indirizzo MAC del dispositivo con cui non si è riusciti a connettere
                 String notAvailableDevice = intent.getStringExtra(CostantKeys.ACTION_CONTACT_NOT_AVAILABLE_EXTRA);
 
@@ -667,7 +677,8 @@ public class ConversationListActivity extends AppCompatActivity
                 //sia in un tablet in landscape, sia in uno smartphone
                 if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
                     messageDetail.setText(R.string.text_empty);
-                } else if(DummyContent.ITEMS.isEmpty()) {
+                    noDeviceText.setVisibility(View.GONE);
+                } else if(DummyContent.ITEMS.isEmpty() && !mTwoPane) {
                     noDeviceText.setVisibility(View.VISIBLE);
                 }
 
@@ -685,6 +696,7 @@ public class ConversationListActivity extends AppCompatActivity
                 //(Nel mio caso, semplicemente aggiungo la stringa "(Connesso)" ma tu
                 //crea qualcosa di più visivo, come cambiare il suo sfondo in blu...)
 
+                tools.closeRingDialog(dialog);
                 //Nota: devi scandire l'intera recyclerView e confrontare ciascun indirizzo MAC
                 //con quello recuperato dall'intent tramite la funzione Utils.getSimilarity().
                 //Memorizza ogni risultato che ottieni dal confronto con ciascun indirizzo MAC
@@ -747,7 +759,8 @@ public class ConversationListActivity extends AppCompatActivity
                 //sia in un tablet in landscape, sia in uno smartphone
                 if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
                     messageDetail.setText(R.string.text_empty);
-                } else if(DummyContent.ITEMS.isEmpty()) {
+                    noDeviceText.setVisibility(View.GONE);
+                } else if(DummyContent.ITEMS.isEmpty() && !mTwoPane) {
                     noDeviceText.setVisibility(View.VISIBLE);
                 }
                 simpleItemRecyclerViewAdapter.notifyDataSetChanged();
@@ -907,7 +920,7 @@ public class ConversationListActivity extends AppCompatActivity
     }
 };
 
-    // Metodo per far partire il conteggio del tempo all'handleMessage.
+    // Metodo per far partire il conteggio del tempo di durata massima della progressBar all'handleMessage.
     private void startTimeProgressBar() {
         mStartTime = SystemClock.uptimeMillis();
         final android.os.Message closeProgressBar = mHandler.obtainMessage(CLOSE_PROGRESS_BAR);

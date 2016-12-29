@@ -88,13 +88,7 @@ public class ConversationDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments.
             mItem = DummyContent.ITEM_MAP.get(getArguments().getString(CostantKeys.ACTION_START_CONVERSATION_ACTIVITY_EXTRA_MAC));
-
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.mac);
-            }
-        }
+         }
 
         if(savedInstanceState == null) {
 
