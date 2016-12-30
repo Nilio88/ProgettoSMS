@@ -115,6 +115,7 @@ public class WiChatService extends Service {
         MessagesStore.initialize(this);
         Log.i(LOG_TAG, "MessagesStore inizializzato.");
 
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         mChannel = mManager.initialize(this, getMainLooper(), new WifiP2pManager.ChannelListener() {
 
@@ -1047,7 +1048,6 @@ public class WiChatService extends Service {
 
                                 //Manda il messaggio all'activity/fragment interessata se è registrata
                                 if (mMessagesListener) {
-                                    notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE); //Perché?
                                     notificationManager.notify(CostantKeys.NEW_MESSAGE_NOTIFICATION,
                                             tools.notificationMsg(context, ConversationListActivity.class, message.getText()));
                                     notificationManager.cancelAll();
@@ -1063,7 +1063,6 @@ public class WiChatService extends Service {
                                     Intent intent = new Intent(CostantKeys.ACTION_SEND_MESSAGE_FOR_CONTACTS);
                                     intent.putExtra(CostantKeys.ACTION_SEND_MESSAGE_EXTRA, message);
 
-                                    notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE); //Ancora?
                                     notificationManager.notify(CostantKeys.NEW_MESSAGE_NOTIFICATION,
                                             tools.notificationMsg(context, ConversationListActivity.class, message.getText()));
 
@@ -1079,7 +1078,6 @@ public class WiChatService extends Service {
                                     //Salva il messaggio nella memoria interna
                                     mMessagesStore.saveMessage(message);
 
-                                    notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE); //Davvero? Ma perché? Non si può ottenere la sua istanza una sola volta?
                                     notificationManager.notify(CostantKeys.NEW_MESSAGE_NOTIFICATION,
                                             tools.notificationMsg(context, ConversationListActivity.class, message.getText()));
                                 }

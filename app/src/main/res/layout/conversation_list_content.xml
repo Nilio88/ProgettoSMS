@@ -17,7 +17,8 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/text_size"
         android:alpha =".87"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="15dp" />
 
     <ImageView
         android:id="@+id/contact_icon"
@@ -34,7 +35,8 @@
         android:textSize="@dimen/text_size"
         android:alpha=".87"
         android:layout_marginLeft="7dp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_marginTop="15dp" />
 
     <TextView
         android:id="@+id/num_news_messages"
@@ -46,7 +48,8 @@
         android:textColor="@android:color/white"
         android:background="@drawable/background_circle"
         android:visibility="invisible"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        android:layout_marginTop="15dp" />
 
     <TextView
         android:id="@+id/state_connection"
@@ -55,6 +58,7 @@
         android:layout_toLeftOf="@id/num_news_messages"
         android:textSize="@dimen/text_size"
         android:alpha=".87"
-        android:layout_marginRight="10dp"/>
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="15dp" />
 
 </RelativeLayout>
