@@ -144,6 +144,13 @@ public class ConversationListActivity extends AppCompatActivity
         if (savedInstanceState != null) {
             mFirstRun = savedInstanceState.getBoolean(KEY_FIRSTRUN);
         }
+        else {
+            //Cancella i dispositivi rilevati e memorizzati in DummyContent.
+            //Questo serve per risolvere il bug che mostra la textView noDeviceText
+            //al riavvio di WiChat dopo che ha rilevato almeno un dispositivo remoto.
+            DummyContent.ITEM_MAP.clear();
+            DummyContent.ITEMS.clear();
+        }
 
         //Avvia WiChatService se non è in esecuzione.
         if (mFirstRun) {
@@ -225,8 +232,8 @@ public class ConversationListActivity extends AppCompatActivity
         if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
             messageDetail.setText(R.string.text_empty);
             noDeviceText.setVisibility(View.GONE);
-        } else if(DummyContent.ITEMS.isEmpty() && !mTwoPane) {
-            noDeviceText.setVisibility(View.VISIBLE);
+        } else if(!DummyContent.ITEMS.isEmpty() && !mTwoPane) {
+            noDeviceText.setVisibility(View.GONE);
         }
         simpleItemRecyclerViewAdapter.notifyDataSetChanged();
         Log.i(LOG_TAG, "Sono in onResume() di MainActivity.");
@@ -264,6 +271,7 @@ public class ConversationListActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         Log.i(LOG_TAG, "Sono in onDestroy() di MainActivity.");
+
     }
 
 
@@ -854,6 +862,11 @@ public class ConversationListActivity extends AppCompatActivity
                         }
                     }
                 }
+                else {
+                    //Chiude la progressDialog se è aperta.
+                    if (dialog != null && dialog.isShowing())
+                        tools.closeRingDialog(dialog);
+                }
 
                 startTimeProgressBar();
                 WiChatService.discoverServices(context);
@@ -865,6 +878,7 @@ public class ConversationListActivity extends AppCompatActivity
                 //Inserisci qui il codice che interrompe la progress bar e visualizza il messaggio
                 //che comunica il rifiuto della connessione (preferibilmente in una dialogue).
                 Log.i(LOG_TAG, "Ho ricevuto l'intent ACTION_CONNECTION_REFUSED.");
+                tools.closeRingDialog(dialog);
                 Toast.makeText(context, "Connessione rifiutata.", Toast.LENGTH_SHORT).show();
 
                 //Ritorna a cercare i dispositivi nelle vicinanze.
