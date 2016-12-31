@@ -79,7 +79,7 @@
         android:layout_gravity="bottom|right"
         android:layout_marginBottom="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
-        android:src="@drawable/ic_autorenew_black_24dp"
+        android:src="@drawable/ic_refresh_white_24dp"
         app:fabSize="normal"
         app:backgroundTint="@color/colorAccent"
         app:backgroundTintMode="src_over"

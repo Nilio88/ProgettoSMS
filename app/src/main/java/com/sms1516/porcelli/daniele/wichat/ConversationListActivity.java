@@ -3,6 +3,7 @@ package com.sms1516.porcelli.daniele.wichat;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -70,6 +71,7 @@ public class ConversationListActivity extends AppCompatActivity
     public  MessageAlertMenagement messageAlertMenagement;
     private View viewSelected = null;
     ProgressBar progressBar;
+    private NotificationManager notificationManager;
     private String connectedTo; //Memorizza l'indirizzo MAC del dispositivo remoto con il quale si è già connessi
     Snackbar snackbar;
     private int posizione = 0;
@@ -94,6 +96,8 @@ public class ConversationListActivity extends AppCompatActivity
         setContentView(R.layout.activity_conversation_list);
 
         Log.i(LOG_TAG, "Sono in onCreate() della MainActivity.");
+
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         //Imposta la transizione animata tra activity se quest'app viene
         //eseguita su un dispositivo Android 5.0 o più recenti.
@@ -140,6 +144,8 @@ public class ConversationListActivity extends AppCompatActivity
         mIntentFilter.addAction(CostantKeys.ACTION_DISCONNECT_SUCCESSFUL);
         mIntentFilter.addAction(CostantKeys.ACTION_WIFI_TURNED_OFF);
         mIntentFilter.addAction(CostantKeys.ACTION_WIFI_TURNED_ON);
+        mIntentFilter.addAction(CostantKeys.ACTION_CONNECTING);
+        mIntentFilter.addAction(CostantKeys.ACTION_STILL_CONNECTING);
 
         if (savedInstanceState != null) {
             mFirstRun = savedInstanceState.getBoolean(KEY_FIRSTRUN);
@@ -157,6 +163,9 @@ public class ConversationListActivity extends AppCompatActivity
             Class wiChatServiceClass = WiChatService.class;
 
             if (!isMyServiceRunning(wiChatServiceClass)) {
+
+                //Inizializza il MessagesStore.
+                MessagesStore.initialize(this);
 
                 //Avvia WiChatService.
                 Intent startWiChatServiceIntent = new Intent(this, wiChatServiceClass);
@@ -222,6 +231,10 @@ public class ConversationListActivity extends AppCompatActivity
         }
         WiChatService.whoIsConnected(this);
 
+        //Invia la richiesta a WiChatService per sapere se il dispositivo si sta connettendo
+        //con uno remoto.
+        WiChatService.isConnecting(this);
+
         Log.i(LOG_TAG, "Avviata la scansione dei dispositivi.");
 
     }
@@ -229,6 +242,10 @@ public class ConversationListActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+        //Cancella le notifiche ricevute nella status bar mentre l'activity era inattiva.
+        notificationManager.cancelAll();
+
         if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
             messageDetail.setText(R.string.text_empty);
             noDeviceText.setVisibility(View.GONE);
@@ -245,8 +262,8 @@ public class ConversationListActivity extends AppCompatActivity
         if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
             messageDetail.setText(R.string.text_empty);
             noDeviceText.setVisibility(View.GONE);
-        } else if(DummyContent.ITEMS.isEmpty() && !mTwoPane) {
-            noDeviceText.setVisibility(View.VISIBLE);
+        } else if(!DummyContent.ITEMS.isEmpty() && !mTwoPane) {
+            noDeviceText.setVisibility(View.GONE);
         }
         simpleItemRecyclerViewAdapter.notifyDataSetChanged();
     }
@@ -464,14 +481,14 @@ public class ConversationListActivity extends AppCompatActivity
 
                 return true;
 
-            case R.id.refresh_service:
+            /*case R.id.refresh_service:
                 //Riavvia il Service. Questo è necessario
                 //poiché le API su cui si basa l'app
                 //(WifiP2pManager) non sono completamente
                 //affidabili (contengono bug).
                 stopService(new Intent(ConversationListActivity.this, WiChatService.class));
                 startService(new Intent(ConversationListActivity.this, WiChatService.class));
-                return true;
+                return true;*/
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -692,7 +709,31 @@ public class ConversationListActivity extends AppCompatActivity
 
                 simpleItemRecyclerViewAdapter.notifyDataSetChanged();
 
-            }  else if (action.equals(CostantKeys.ACTION_CONNECTED_TO_DEVICE)) { //È cambiato un po'
+            }
+
+            else if (action.equals(CostantKeys.ACTION_STILL_CONNECTING)) {
+
+                //Controlla se il dispositivo sta ancora eseguendo la connessione
+                //con il dispositivo remoto.
+                boolean stillConnecting = intent.getBooleanExtra(CostantKeys.ACTION_STILL_CONNECTING_EXTRA, false);
+
+                if (stillConnecting) {
+
+                    //Mostra la progressDialog
+                    if (dialog == null || !dialog.isShowing())
+                    dialog = tools.launchRingDialog(ConversationListActivity.this, "Connessione in corso...");
+                    dialog.show();
+                }
+                else {
+
+                    //Chiudi la progressDialog
+                    if (dialog != null && dialog.isShowing()) {
+                        tools.closeRingDialog(dialog);
+                    }
+                }
+            }
+
+            else if (action.equals(CostantKeys.ACTION_CONNECTED_TO_DEVICE)) { //È cambiato un po'
 
                 //La connessione con il dispositivo remoto è stata stabilita con successo o era già stata stabilita
                 Log.i(LOG_TAG, "Il dispositivo remoto è disponibile per comunicare.");
@@ -824,6 +865,8 @@ public class ConversationListActivity extends AppCompatActivity
                 String remoteDevice = intent.getStringExtra(CostantKeys.ACTION_CONNECTION_RECEIVED_EXTRA);
                 Log.e(LOG_TAG, "REMOTE DEVICE --> " + remoteDevice);
 
+                tools.closeRingDialog(dialog);
+
                 //Ora confronta l'indirizzo MAC apppena ricavato con ciascun indirizzo MAC
                 //presente nel recyclerView tramite la funzione Utils.getSimilarity(). Quindi
                 //segnala come connesso il dispositivo nel recyclerView che ha ottenuto il risultato
@@ -862,11 +905,6 @@ public class ConversationListActivity extends AppCompatActivity
                         }
                     }
                 }
-                else {
-                    //Chiude la progressDialog se è aperta.
-                    if (dialog != null && dialog.isShowing())
-                        tools.closeRingDialog(dialog);
-                }
 
                 startTimeProgressBar();
                 WiChatService.discoverServices(context);
@@ -886,6 +924,7 @@ public class ConversationListActivity extends AppCompatActivity
                 mIsDone = false;
                 startTimeProgressBar();
                 WiChatService.discoverServices(context);
+
             }  else if (action.equals(CostantKeys.ACTION_DISCONNECT_SUCCESSFUL)) {
 
                 //Intent ricevuto dopo aver premuto su "Disconnetti" se la disconnessione
@@ -894,6 +933,13 @@ public class ConversationListActivity extends AppCompatActivity
 
                 //Inserisci qui il codice che vuoi per notificare la riuscita disconnessione.
 
+            }
+            else if (action.equals(CostantKeys.ACTION_CONNECTING)) {
+
+                //Mostra la progressDialog che informa l'utente che il suo dispositivo si sta
+                //connettendo con un dispositivo remoto.
+                dialog = tools.launchRingDialog(context, "Connessione in corso...");
+                dialog.show();
             }
         }
     }

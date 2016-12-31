@@ -73,6 +73,8 @@ public class WiChatService extends Service {
 
     private static final String ACTION_CANCEL_CONNECT = "com.sms1516.porcelli.daniele.wichat.action.CANCEL_CONNECT";
 
+    private static final String ACTION_IS_CONNECTING = "com.sms1516.porcelli.daniele.wichat.action.IS_CONNECTING";
+
     //Variabili d'istanza
     private WifiP2pManager mManager;
     private WifiP2pManager.Channel mChannel;
@@ -90,6 +92,7 @@ public class WiChatService extends Service {
     private boolean mIRequested;    //Memorizzerà lo stato che indica se è stato l'utente a richiedere la connessione oppure no.
     private ChatConnection currentConnection;
     private MessagesStore mMessagesStore;
+    private boolean mConnecting = false;    //Memorizzerà false nel caso in cui il dispositivo non sta eseguendo alcuna connessione; true se il dispositivo sta eseguendo una connessione con un dispositivo remoto.
     static boolean mWifiState = false;
     private Tools tools;
     public NotificationManager notificationManager;
@@ -207,6 +210,8 @@ public class WiChatService extends Service {
                         //ha cliccato.
                         conversingWith = device;
 
+                        mConnecting = true;
+
                         Log.i(LOG_TAG, "Sono riuscito a connettermi con il dispositivo remoto. Aspetto le informazioni di connessione.");
 
                     }
@@ -255,6 +260,17 @@ public class WiChatService extends Service {
                 connectedIntent.putExtra(CostantKeys.ACTION_CONNECTED_TO_DEVICE_EXTRA, conversingWith);
                 mLocalBroadcastManager.sendBroadcast(connectedIntent);
 
+            }
+        }
+
+        else if(intent.getAction().equals(ACTION_IS_CONNECTING)) {
+
+            //Invia l'intent per l'activity dei contatti che informa l'utente che
+            //il dispositivo in uso si sta connettendo.
+            if (mContactsListener) {
+                Intent stillConnectingIntent = new Intent(CostantKeys.ACTION_STILL_CONNECTING);
+                stillConnectingIntent.putExtra(CostantKeys.ACTION_STILL_CONNECTING_EXTRA, mConnecting);
+                mLocalBroadcastManager.sendBroadcast(stillConnectingIntent);
             }
         }
 
@@ -813,6 +829,14 @@ public class WiChatService extends Service {
                         mHandler.removeCallbacksAndMessages(null);
                         Log.i(LOG_TAG, "Messaggio da inviare all'handler rimosso.");
                     }
+                    else {
+                        //Avvisa l'activity principale del dispositivo remoto che il dispositivo si sta connettendo.
+                        mConnecting = true;
+                        if (mContactsListener) {
+                            Intent connectingIntent = new Intent(CostantKeys.ACTION_CONNECTING);
+                            mLocalBroadcastManager.sendBroadcast(connectingIntent);
+                        }
+                    }
 
                     //Si è appena connesso ad un dispositivo remoto: otteniamo le informazioni della connessione
                     mManager.requestConnectionInfo(mChannel, connectionInfoListener);
@@ -1065,6 +1089,7 @@ public class WiChatService extends Service {
 
                                     notificationManager.notify(CostantKeys.NEW_MESSAGE_NOTIFICATION,
                                             tools.notificationMsg(context, ConversationListActivity.class, message.getText()));
+                                    notificationManager.cancelAll();
 
                                     mLocalBroadcastManager.sendBroadcast(intent);
                                     Log.i(LOG_TAG, "Messaggio inviato all'activity dei contatti.");
@@ -1306,6 +1331,8 @@ public class WiChatService extends Service {
                 mIRequested = false;
                 Log.i(LOG_TAG, "mIRequested impostato a false.");
 
+                mConnecting = false;
+
                 //Riavvia la ricerca dei dispositivi per poter essere nuovamente rilevato
                 //dopo la connessione.
                 refreshServices();
@@ -1349,6 +1376,7 @@ public class WiChatService extends Service {
                     conversingWith = Utils.getMac(remoteDeviceIPAddress.getHostAddress());
                     Log.i(LOG_TAG, "Recuperato indirizzo MAC del dispositivo remoto: conversingWith = " + conversingWith);
                 }
+                mConnecting = false;
 
                 //Informa l'activity dei contatti che è stata
                 //stabilita la connessione.
@@ -1536,6 +1564,18 @@ public class WiChatService extends Service {
         Intent whoIsConnectedIntent = new Intent(context, WiChatService.class);
         whoIsConnectedIntent.setAction(ACTION_WHO_IS_CONNECTED);
         context.startService(whoIsConnectedIntent);
+    }
+
+    /**
+     * Metodo statico invocato dall'activity dei contatti per informare a tale
+     * activity se il dispositivo in uso si sta connettendo con uno remoto.
+     *
+     * @param context Un'istanza di Context utilizzata per invocare il metodo startService().
+     */
+    public static void isConnecting(Context context) {
+        Intent isConnecting = new Intent(context, WiChatService.class);
+        isConnecting.setAction(ACTION_IS_CONNECTING);
+        context.startService(isConnecting);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.sms1516.porcelli.daniele.wichat;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -67,6 +68,7 @@ public class ConversationDetailFragment extends Fragment {
     RecyclerView recyclerView;
     LinearLayout linearLayoutChat;
     private Snackbar snackbar;
+    private NotificationManager notificationManager;
     private static final String KEY_NUM_MESSAGGI_CRONOLOGIA = "num_messaggio_cronologia";
     private static final String KEY_CONTACT_MAC = "contact_mac";
     private static final String KEY_THIS_DEVICE_MAC = "this_device_mac";
@@ -82,6 +84,7 @@ public class ConversationDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        notificationManager = (NotificationManager) this.getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         mMessagesStore = MessagesStore.getInstance();
         mMessagesReceivedPrefs = this.getActivity().getSharedPreferences(CostantKeys.RECEIVED_MESSAGES_PREFS, Context.MODE_PRIVATE);
          if (getArguments().containsKey(CostantKeys.ACTION_START_CONVERSATION_ACTIVITY_EXTRA_MAC)) {
@@ -101,6 +104,11 @@ public class ConversationDetailFragment extends Fragment {
             mThisDeviceMacAddress = info.getMacAddress().toLowerCase();
 
             Log.i(LOG_TAG, "Indirizzo MAC recuperato: " + mThisDeviceMacAddress);
+
+            //Svuota le strutture dati dei messaggi della classe Message.
+            Message.ITEM_MAP.clear();
+            Message.ITEMS.clear();
+
         }   else {
 
             //Inserisci qui il codice per recuperare i dati salvati dall'activity
@@ -154,6 +162,9 @@ public class ConversationDetailFragment extends Fragment {
         SharedPreferences.Editor editor = mMessagesReceivedPrefs.edit();
         editor.putInt(mContactMacAddress, mNumMessaggi);
         editor.apply();
+
+        //Cancella le notifiche arrivate mentre il fragment non era visibile (era in onStop() o onPause() ).
+        notificationManager.cancelAll();
 
         //Controlla se il contatto con cui sta comunicando è ancora disponibile
         WiChatService.checkContactAvailable(this.getContext());
@@ -249,7 +260,7 @@ public class ConversationDetailFragment extends Fragment {
         super.onDestroy();
 
         //Svuota la memoria dei messaggi
-        Message.deleteAllMessages();
+        //Message.deleteAllMessages();
     }
 
     @Override

@@ -5,9 +5,5 @@
         android:id="@+id/disconnect_mitem"
         android:title="Disconnetti"
         app:showAsAction="always" />
-    <item
-        android:id="@+id/refresh_service"
-        android:title="Riavvia Service"
-        app:showAsAction="never" />
 
 </menu>

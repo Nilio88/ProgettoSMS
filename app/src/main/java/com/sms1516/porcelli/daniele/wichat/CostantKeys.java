@@ -52,6 +52,9 @@ public interface CostantKeys {
     //Chiave costante utilizzata per inserire e recuperare l'indirizzo MAC dall'intent ACTION_CONTACT_NOT_AVAILABLE
     String ACTION_CONTACT_NOT_AVAILABLE_EXTRA = "com.sms1516.porcelli.daniele.wichat.action.CONTACT_NOT_AVAILABLE_EXTRA";
 
+    //Chiave costante utilizzata per l'intent che avvisa l'activity principale (se attiva) che il dispositivo in uso ha ricevuto una richiesta di connessione e si sta connettendo.
+    String ACTION_CONNECTING = "com.sms1516.porcelli.daniele.wichat.action.CONNECTING";
+
     //Chiave costatnte utilizzata per l'intent che indica la riuscita connessione delle socket
     String ACTION_CONNECTION_RECEIVED = "com.sms1516.porcelli.daniele.wichat.action.CONNECTION_RECEIVED";
 
@@ -69,6 +72,12 @@ public interface CostantKeys {
 
     //Chiave costante utilizzata per inserire e recuperare lo stato della disponibilità del contatto con cui si sta comunicando
     String ACTION_CONTACT_AVAILABILITY_EXTRA = "com.sms1516.porcelli.daniele.wichat.action.START_CONVERSATION_ACTIVITY_EXTRA";
+
+    //Chiave costante utilizzata per identificare l'intent di risposta all'activity dei contatti riguardo la richiesta se il dispositivo sta ancora stabilendo una connessione con quello remoto
+    String ACTION_STILL_CONNECTING = "com.sms1516.porcelli.daniele.wichat.action.STILL_CONNECTING";
+
+    //Chiave costante utilizzata dall'intent ACTION_STILL_CONNECTING per memorizzare il parametro passato all'activity dei contatti.
+    String ACTION_STILL_CONNECTING_EXTRA = "com.sms1516.porcelli.daniele.wichat.action.STILL_CONNECTIONG_EXTRA";
 
     //Chiave costante utilizzata per l'intent che notifica se e quale contatto è già connesso con questo dispositivo
     String ACTION_CONTACT_CONNECTED = "com.sms1516.porcelli.daniele.wichat.action.CONTACT_CONNECTED";
