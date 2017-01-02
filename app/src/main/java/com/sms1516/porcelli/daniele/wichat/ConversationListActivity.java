@@ -144,7 +144,6 @@ public class ConversationListActivity extends AppCompatActivity
         mIntentFilter.addAction(CostantKeys.ACTION_DISCONNECT_SUCCESSFUL);
         mIntentFilter.addAction(CostantKeys.ACTION_WIFI_TURNED_OFF);
         mIntentFilter.addAction(CostantKeys.ACTION_WIFI_TURNED_ON);
-        mIntentFilter.addAction(CostantKeys.ACTION_CONNECTING);
         mIntentFilter.addAction(CostantKeys.ACTION_STILL_CONNECTING);
 
         if (savedInstanceState != null) {
@@ -223,8 +222,6 @@ public class ConversationListActivity extends AppCompatActivity
 
         WiChatService.registerContactsListener(this);
 
-        //Se questa Activity è stata avviata per la prima volta,
-        //avvia la scansione dei dispositivi nelle vicinanze.
         if (mFirstRun) {
             //WiChatService.whoIsConnected(this);
             mFirstRun = false;
@@ -234,8 +231,6 @@ public class ConversationListActivity extends AppCompatActivity
         //Invia la richiesta a WiChatService per sapere se il dispositivo si sta connettendo
         //con uno remoto.
         WiChatService.isConnecting(this);
-
-        Log.i(LOG_TAG, "Avviata la scansione dei dispositivi.");
 
     }
 
@@ -258,7 +253,19 @@ public class ConversationListActivity extends AppCompatActivity
 
     @Override public void onRestart() {
         super.onRestart();
+
         Log.i(LOG_TAG, "Sono in onRestart() di MainActivity.");
+
+        mLocalBroadcastManager.registerReceiver(mContactsMessagesReceiver, mIntentFilter);
+
+        WiChatService.registerContactsListener(this);
+
+        WiChatService.whoIsConnected(this);
+
+        //Invia la richiesta a WiChatService per sapere se il dispositivo si sta connettendo
+        //con uno remoto.
+        WiChatService.isConnecting(this);
+
         if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
             messageDetail.setText(R.string.text_empty);
             noDeviceText.setVisibility(View.GONE);
@@ -730,6 +737,33 @@ public class ConversationListActivity extends AppCompatActivity
                     if (dialog != null && dialog.isShowing()) {
                         tools.closeRingDialog(dialog);
                     }
+
+                    //Aggiorna lo stato della connessione con il dispositivo remoto.
+                    if (connectedTo != null) {
+                        DummyContent.changeStateConnection(connectedTo, DummyContent.Device.CONNECTED);
+                    }
+
+                    else {
+                        //Il contatto si è disconnesso mentre WiChat era in onStop().
+                        //Aggiorna il contatto: toglie "connesso" dall'item della recyclerView.
+                        for (DummyContent.Device device: DummyContent.ITEMS) {
+
+                            if (device.connected) {
+                                //Rimuovi "connesso".
+                                DummyContent.changeStateConnection(device.mac, DummyContent.Device.DISCONNECTED);
+
+                                //Poiché può essere connesso solo un dispositivo alla volta,
+                                //non c'è più bisogno di scandire la lista ITEMS e il ciclo può
+                                //interrompersi qui.
+                                break;
+                            }
+                        }
+                    }
+                    simpleItemRecyclerViewAdapter.notifyDataSetChanged();
+
+                    //Avvia la ricerca dei dispositivi nelle vicinanze.
+                    WiChatService.discoverServices(context);
+                    Log.i(LOG_TAG, "Avviata la scansione dei dispositivi.");
                 }
             }
 
@@ -907,7 +941,7 @@ public class ConversationListActivity extends AppCompatActivity
                 }
 
                 startTimeProgressBar();
-                WiChatService.discoverServices(context);
+                //WiChatService.discoverServices(context);
 
             }  else if (action.equals(CostantKeys.ACTION_CONNECTION_REFUSED)) {
 
@@ -933,13 +967,6 @@ public class ConversationListActivity extends AppCompatActivity
 
                 //Inserisci qui il codice che vuoi per notificare la riuscita disconnessione.
 
-            }
-            else if (action.equals(CostantKeys.ACTION_CONNECTING)) {
-
-                //Mostra la progressDialog che informa l'utente che il suo dispositivo si sta
-                //connettendo con un dispositivo remoto.
-                dialog = tools.launchRingDialog(context, "Connessione in corso...");
-                dialog.show();
             }
         }
     }

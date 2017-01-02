@@ -829,14 +829,8 @@ public class WiChatService extends Service {
                         mHandler.removeCallbacksAndMessages(null);
                         Log.i(LOG_TAG, "Messaggio da inviare all'handler rimosso.");
                     }
-                    else {
-                        //Avvisa l'activity principale del dispositivo remoto che il dispositivo si sta connettendo.
+                    else
                         mConnecting = true;
-                        if (mContactsListener) {
-                            Intent connectingIntent = new Intent(CostantKeys.ACTION_CONNECTING);
-                            mLocalBroadcastManager.sendBroadcast(connectingIntent);
-                        }
-                    }
 
                     //Si è appena connesso ad un dispositivo remoto: otteniamo le informazioni della connessione
                     mManager.requestConnectionInfo(mChannel, connectionInfoListener);
@@ -1445,6 +1439,7 @@ public class WiChatService extends Service {
                                 Log.i(LOG_TAG, "Il contatto non ha accettato la connessione.");
                                 mIRequested = false;
                                 conversingWith = null;
+                                mConnecting = false;
 
                                 if (mContactsListener) {
                                     //Invia all'activity dei contatti l'intent che notifica che
