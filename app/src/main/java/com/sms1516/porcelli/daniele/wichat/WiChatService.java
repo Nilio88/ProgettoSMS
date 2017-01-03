@@ -905,14 +905,13 @@ public class WiChatService extends Service {
 
         //Variabili d'istanza
         private Socket connSocket;
-        //private String macAddress;
         private SendingThread sendingThread;
         private ReceivingThread receivingThread;
 
         private static final int TIMEOUT = 5000;
 
         /**
-         * Costruttore invocato dal server.
+         * Costruttore invocato dal group owner.
          *
          * @param socket Il socket che gestisce la connessione tra i due dispositivi
          * @throws IOException se i costruttori dei thread non sono riusciti ad ottenere gli stream
@@ -946,11 +945,11 @@ public class WiChatService extends Service {
 
         /**
          * Costruttore invocato quando si vuole instaurare una
-         * connessione con il server del dispositivo remoto.
+         * connessione con il dispositivo group owner della connessione Wi-Fi Direct.
          *
          * @throws IOException se la socket non è riuscita a connettersi.
          */
-        public ChatConnection(/*InetAddress srvAddress, int srvPort, String macAddress*/) throws IOException {
+        public ChatConnection() throws IOException {
             Log.i(LOG_TAG, "Sono nel costruttore di ChatConnection per le connessioni da effetturare.");
 
             //Poiché non è possibile eseguire operazioni di rete nel thread principale
@@ -986,25 +985,6 @@ public class WiChatService extends Service {
             sendingThread.deliverMessage(message);
         }
 
-        /**
-         * Nota: probabilmente non ci servirà.
-         * Imposta l'indirizzo MAC del dispositivo remoto con cui si
-         * è connessi.
-         *
-         * @param macAddress L'indirizzo MAC del dispositivo con cui si è connessi in forma di stringa.
-         *
-        public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-        }*/
-
-        /**
-         * Restituisce l'indirizzo MAC del dispositivo remoto con il quale si è connessi.
-         *
-         * @return L'indirizzo MAC del dispositivo remoto in forma di stringa.
-         */
-        /*public String getMacAddress() {
-            return macAddress;
-        }*/
 
         /**
          * Classe interna che rappresenta il thread che si mette in ascolto
@@ -1100,7 +1080,7 @@ public class WiChatService extends Service {
                                     notificationManager.notify(CostantKeys.NEW_MESSAGE_NOTIFICATION,
                                             tools.notificationMsg(context, ConversationListActivity.class, message.getText()));
                                 }
-                                //}
+
                             }
 
                         } catch (ClassNotFoundException ex) {
@@ -1236,42 +1216,10 @@ public class WiChatService extends Service {
             } catch (IOException ex) {
                 Log.e(LOG_TAG, "Errore durante la chiusura del socket: " + ex.toString());
             }
-
-            //Informa le activity della disconnessione del dispositivo
-            /*if (mContactsListener) {
-                Intent intent = new Intent(CostantKeys.ACTION_CONTACT_DISCONNECTED_FOR_CONTACTS);
-                intent.putExtra(CostantKeys.ACTION_CONTACT_DISCONNECTED_FOR_CONTACTS_EXTRA, macAddress);
-                mLocalBroadcastManager.sendBroadcast(intent);
-            }
-
-            else if (mMessagesListener && conversingWith.equals(macAddress)) {
-                Intent intent = new Intent(CostantKeys.ACTION_CONTACT_DISCONNECTED);
-                mLocalBroadcastManager.sendBroadcast(intent);
-            }*/
-
-            //Rimuovi l'indirizzo MAC del dispositivo con cui si sta comunicando se è lo stesso di
-            //questa connessione
-            /*if (conversingWith != null && conversingWith.equals(macAddress))
-                conversingWith = null;
-
-            //Rimuove questa connessione dalla lista delle connessioni attive
-            synchronized (connections) {
-                connections.remove(this);
-            }*/
         }
     }
 
     private class ConnectThread extends Thread {
-
-        /*private InetAddress ip;
-        private int port;
-        private String macAddress;*/
-
-        /*public ConnectThread(InetAddress ip, int port, String macAddress) {
-            this.ip = ip;
-            this.port = port;
-            this.macAddress = macAddress;
-        }*/
 
         @Override
         public void run() {
