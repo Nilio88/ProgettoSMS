@@ -1449,9 +1449,6 @@ public class WiChatService extends Service {
      * @param device  Indirizzo MAC del dispositivo a cui connettersi rappresentato in forma testuale.
      */
     public static void connectToClient(Context context, String device) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.cancelAll();
-
         Intent connectToClientIntent = new Intent(context, WiChatService.class);
         connectToClientIntent.setAction(ACTION_CONNECT_TO_CLIENT);
         connectToClientIntent.putExtra(ACTION_CONNECT_TO_CLIENT_EXTRA, device);

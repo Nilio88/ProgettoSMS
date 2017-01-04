@@ -85,7 +85,7 @@ public class ConversationListActivity extends AppCompatActivity
     private Dialog dialog;
 
     //Costante per il Log
-    private static final String LOG_TAG = "WifiBroadcast";
+    private static final String LOG_TAG = ConversationListActivity.class.getName();
 
     //Whether or not the activity is in two-pane mode, i.e. running on a tablet device.
     private boolean mTwoPane;
@@ -207,6 +207,7 @@ public class ConversationListActivity extends AppCompatActivity
                     //Avvia la ricerca dei nuovi contatti
                     progressBar.setVisibility(View.VISIBLE);
                     mIsDone = false;
+                    simpleItemRecyclerViewAdapter.notifyDataSetChanged();
                     startTimeProgressBar();
                     WiChatService.discoverServices(context);
 
@@ -255,16 +256,6 @@ public class ConversationListActivity extends AppCompatActivity
         super.onRestart();
 
         Log.i(LOG_TAG, "Sono in onRestart() di MainActivity.");
-
-        mLocalBroadcastManager.registerReceiver(mContactsMessagesReceiver, mIntentFilter);
-
-        WiChatService.registerContactsListener(this);
-
-        WiChatService.whoIsConnected(this);
-
-        //Invia la richiesta a WiChatService per sapere se il dispositivo si sta connettendo
-        //con uno remoto.
-        WiChatService.isConnecting(this);
 
         if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
             messageDetail.setText(R.string.text_empty);
@@ -739,7 +730,7 @@ public class ConversationListActivity extends AppCompatActivity
                     }
 
                     //Aggiorna lo stato della connessione con il dispositivo remoto.
-                    if (connectedTo != null) {
+                    if (connectedTo != null && DummyContent.ITEMS.size() > 0) {
                         DummyContent.changeStateConnection(connectedTo, DummyContent.Device.CONNECTED);
                     }
 
