@@ -730,10 +730,10 @@ public class ConversationListActivity extends AppCompatActivity
                     }
 
                     //Aggiorna lo stato della connessione con il dispositivo remoto.
-                    if (connectedTo != null && DummyContent.ITEMS.size() > 0) {
-                        DummyContent.changeStateConnection(connectedTo, DummyContent.Device.CONNECTED);
+                    if (connectedTo != null) {
+                        if (DummyContent.ITEMS.size() > 0)
+                            DummyContent.changeStateConnection(connectedTo, DummyContent.Device.CONNECTED);
                     }
-
                     else {
                         //Il contatto si è disconnesso mentre WiChat era in onStop().
                         //Aggiorna il contatto: toglie "connesso" dall'item della recyclerView.
