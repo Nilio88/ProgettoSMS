@@ -63,9 +63,9 @@ public class DummyContent {
 
     public static void changeStateConnection(String mac, boolean state) {
         Log.e("MAC -->", "CHANGE STATE CONNECTION: " + mac );
-        Log.e("POSIZIONE --> " , "CHANGE ITEM: " + ITEM_MAP.get(mac).position);
         Log.e("SIZE --> " , "ITEMS_MAP: " + ITEM_MAP.size());
         Log.e("SIZE --> " , "ITEMS: " + ITEMS.size());
+        Log.e("POSIZIONE --> " , "CHANGE ITEM: " + ITEM_MAP.get(mac).position);
 
 
         Device device = ITEM_MAP.get(mac);

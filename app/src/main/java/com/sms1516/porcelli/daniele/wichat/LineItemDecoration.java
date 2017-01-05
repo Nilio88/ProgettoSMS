@@ -34,6 +34,7 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration{
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStrokeWidth(lineWidth);
         mPaint.setColor(Color.GRAY);
+        mPaint.setAlpha(25);
     }
 
     // Il metodo permette la semplice aggiunta dello spazio in basso per la linea.

@@ -211,6 +211,13 @@ public class ConversationListActivity extends AppCompatActivity
                     startTimeProgressBar();
                     WiChatService.discoverServices(context);
 
+                if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
+                    messageDetail.setText(R.string.text_empty);
+                    noDeviceText.setVisibility(View.GONE);
+                } else if(!DummyContent.ITEMS.isEmpty() && !mTwoPane) {
+                    noDeviceText.setVisibility(View.GONE);
+                }
+
             }
         });
     }
@@ -467,7 +474,7 @@ public class ConversationListActivity extends AppCompatActivity
                 WiChatService.disconnect(this);
 
                 //Rimuovi la stringa "connesso" dalla TextView connesso_tv
-                if(connectedTo != null) {
+                if(connectedTo != null && !DummyContent.ITEMS.isEmpty()) {
                     DummyContent.changeStateConnection(connectedTo, DummyContent.Device.DISCONNECTED);
                     simpleItemRecyclerViewAdapter.notifyDataSetChanged();
                 }
@@ -825,7 +832,9 @@ public class ConversationListActivity extends AppCompatActivity
                     }
                 }
 
-                DummyContent.removeItem(macDisconnected);
+                if(!DummyContent.ITEMS.isEmpty()) {
+                    DummyContent.removeItem(macDisconnected);
+                }
                 posizione--;
                 connectedTo = null;
 
