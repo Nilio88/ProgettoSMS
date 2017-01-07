@@ -765,7 +765,7 @@ public class ConversationListActivity extends AppCompatActivity
                 }
             }
 
-            else if (action.equals(CostantKeys.ACTION_CONNECTED_TO_DEVICE)) { //È cambiato un po'
+            else if (action.equals(CostantKeys.ACTION_CONNECTED_TO_DEVICE)) {
 
                 //La connessione con il dispositivo remoto è stata stabilita con successo o era già stata stabilita
                 Log.i(LOG_TAG, "Il dispositivo remoto è disponibile per comunicare.");
