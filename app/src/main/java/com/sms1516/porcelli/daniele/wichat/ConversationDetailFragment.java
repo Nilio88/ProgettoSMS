@@ -106,8 +106,7 @@ public class ConversationDetailFragment extends Fragment {
             Log.i(LOG_TAG, "Indirizzo MAC recuperato: " + mThisDeviceMacAddress);
 
             //Svuota le strutture dati dei messaggi della classe Message.
-            Message.ITEM_MAP.clear();
-            Message.ITEMS.clear();
+            Message.deleteAllMessages();
 
         }   else {
 
@@ -226,7 +225,7 @@ public class ConversationDetailFragment extends Fragment {
         super.onPause();
         Log.i(LOG_TAG, "Sono in onPause() di ConversationActivity.");
 
-        Log.i(LOG_TAG, "In onPause() mNumMessaggi = " + mNumMessaggi);
+        Log.i(LOG_TAG, "In onPause() mNumMessaggi = " + mNumMessaggi + "Message.ITEMS = " + Message.ITEMS.size());
 
         List<Message> messaggiNuovi = new ArrayList<>();
 
@@ -239,6 +238,7 @@ public class ConversationDetailFragment extends Fragment {
             //ATTENZIONE: Io ho messo come mittente mContactMacAddress ad ogni messaggio,
             //ma dobbiamo mettere il giusto mittente di ogni messaggio presente nell'adapter.
             messaggiNuovi.add(Message.ITEMS.get(i));
+            Log.i(LOG_TAG, "Mittente:" + Message.ITEMS.get(i).getSender() + " Messaggio: " + Message.ITEMS.get(i).getText());
             mNumMessaggi++;
         }
 

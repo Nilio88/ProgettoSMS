@@ -249,6 +249,7 @@ public class WiChatService extends Service {
                 //Invia l'intent per richiedere la disconnessione dal dispositivo corrente
                 Intent disconnectIntent = new Intent(CostantKeys.ACTION_SEND_DISCONNECT_REQUEST);
                 disconnectIntent.putExtra(CostantKeys.ACTION_SEND_DISCONNECT_REQUEST_EXTRA, conversingWith);
+                disconnectIntent.putExtra(CostantKeys.ACTION_CONNECTED_TO_DEVICE_EXTRA, device);
                 mLocalBroadcastManager.sendBroadcast(disconnectIntent);
             }
 

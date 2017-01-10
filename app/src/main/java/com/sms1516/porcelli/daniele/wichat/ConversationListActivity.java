@@ -2,10 +2,12 @@ package com.sms1516.porcelli.daniele.wichat;
 
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -881,15 +883,45 @@ public class ConversationListActivity extends AppCompatActivity
                 simpleItemRecyclerViewAdapter.notifyDataSetChanged();
 
             } else if(action.equals(CostantKeys.ACTION_SEND_DISCONNECT_REQUEST)) {
-                //Recupera l'indirizzo MAC del dispositivo remoto con cui bisogna disconnettersi
-                String deviceToDisconect = intent.getStringExtra(CostantKeys.ACTION_SEND_DISCONNECT_REQUEST_EXTRA);
 
+                Log.i(LOG_TAG, "Richiesta di connessione con un'altro dispositivo.");
+                //Recupera l'indirizzo MAC del dispositivo remoto con cui bisogna disconnettersi
+                final String deviceToDisconnect = intent.getStringExtra(CostantKeys.ACTION_SEND_DISCONNECT_REQUEST_EXTRA);
+                final String deviceToConnect = intent.getStringExtra(CostantKeys.ACTION_CONNECTED_TO_DEVICE_EXTRA);
                 //Qui bisogna far apparire una finestra di dialogo che indica che per connettersi con il contatto
                 //selezionato, bisogna prima disconnettersi dal contatto attuale. Se l'utente preme "Si", allora
                 //viene mandata la richiesta di disconnessione al Service, altrimenti tutto rimane come è.
 
-                //MOMENTANEAMENTE COMMENTATO
-                //WiChatService.disconnect(context);
+                AlertDialog.Builder builder = tools.createAlertDialog(context, getDrawable(R.drawable.disconnect_icon_24px), getString(R.string.title_disconnection_alert_dialog)
+                        , getString(R.string.msg_disconnection_alert_dialog));
+
+                builder.setPositiveButton(getString(R.string.positive_button)
+                        , new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                WiChatService.disconnect(getApplicationContext());
+                                //Rimuovi la stringa "connesso" dalla TextView connesso_tv
+                                if(deviceToDisconnect != null && !DummyContent.ITEMS.isEmpty()) {
+                                    DummyContent.changeStateConnection(deviceToDisconnect, DummyContent.Device.DISCONNECTED);
+                                    simpleItemRecyclerViewAdapter.notifyDataSetChanged();
+                                }
+
+                                //Messaggio da visualizzare nel Detail Fragment se l'app sta girando su un tablet in landscape
+                                if (mTwoPane) {
+                                    messageDetail.setText(R.string.message_detail);
+                                }
+                                startConversation(deviceToConnect);
+
+                            }
+                        });
+                builder.setNegativeButton(getString(R.string.negative_button)
+                        , new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                builder.create().show();
             } else if (action.equals(CostantKeys.ACTION_CONNECTION_RECEIVED)) {
 
                 //Questo intent indica la riuscita connessione di un dispositivo remoto
@@ -905,22 +937,23 @@ public class ConversationListActivity extends AppCompatActivity
                 //presente nel recyclerView tramite la funzione Utils.getSimilarity(). Quindi
                 //segnala come connesso il dispositivo nel recyclerView che ha ottenuto il risultato
                 //più basso.
-
-                String macConnected = remoteDevice;
-                int min = remoteDevice.length();
-                for(DummyContent.Device d : DummyContent.ITEMS) {
-                    int similarity = Utils.getSimilarity(remoteDevice, d.mac);
-                    if(similarity < min) {
-                        min = similarity;
-                        macConnected = d.mac;
+                if(remoteDevice != null) {
+                    String macConnected = remoteDevice;
+                    int min = remoteDevice.length();
+                    for (DummyContent.Device d : DummyContent.ITEMS) {
+                        int similarity = Utils.getSimilarity(remoteDevice, d.mac);
+                        if (similarity < min) {
+                            min = similarity;
+                            macConnected = d.mac;
+                        }
                     }
+
+                    if(!DummyContent.ITEMS.isEmpty()) {
+                        DummyContent.changeStateConnection(macConnected, DummyContent.Device.CONNECTED);
+                        connectedTo = macConnected;
+                    }
+                    simpleItemRecyclerViewAdapter.notifyDataSetChanged();
                 }
-
-                DummyContent.changeStateConnection(macConnected, DummyContent.Device.CONNECTED);
-                connectedTo = macConnected;
-
-                simpleItemRecyclerViewAdapter.notifyDataSetChanged();
-
             } else if (action.equals(CostantKeys.ACTION_CONTACT_CONNECTED)) {
 
                 //Questo intent viene inviato dalla classe Service per informare l'activity

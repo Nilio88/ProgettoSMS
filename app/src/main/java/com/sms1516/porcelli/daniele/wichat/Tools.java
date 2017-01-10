@@ -1,12 +1,15 @@
 package com.sms1516.porcelli.daniele.wichat;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
@@ -72,4 +75,13 @@ public class Tools {
             dialog.dismiss();
         }
     }
+
+    public AlertDialog.Builder createAlertDialog(Context context, Drawable icon, String title, String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                .setIcon(icon)
+                .setTitle(title)
+                .setMessage(msg);
+        return builder;
+    }
+
 }

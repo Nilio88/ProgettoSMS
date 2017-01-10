@@ -198,6 +198,8 @@ public class MessagesStore {
      *               nella lista.
      */
     public synchronized void saveMessagesList(String device, List<Message> messageList) {
+
+        Log.i(LOG_TAG, "Sto salvando i messaggi");
         File messagesFile = null;
 
         //Controlla se esiste già il file dove memorizzare i messaggi presenti

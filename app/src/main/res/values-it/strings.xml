@@ -6,5 +6,10 @@
     <string name="text_empty">Nessun dispositivo trovato. Ricarica la pagina per eseguire il rilevamento dei dispositivi.</string>
     <string name="message_detail">Seleziona un dispositivo per aprire la Chat.</string>
     <string name="msg_wifi_turned_off">Il Wi-Fi è spento!</string>
+    <string name="title_disconnection_alert_dialog">Connessione individuata!</string>
+    <string name="msg_disconnection_alert_dialog">Disconnetterti dal contatto attuale?</string>
+    <string name="positive_button">Si</string>
+    <string name="negative_button">No</string>
+
 
 </resources>

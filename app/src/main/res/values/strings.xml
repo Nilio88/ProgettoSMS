@@ -9,5 +9,11 @@
     <string name="send_message">sendMessage</string>
     <string name="msg_wifi_turned_off">Wi-Fi is off!</string>
     <string name="icona_utente">Icona utente</string>
+    <string name="title_disconnection_alert_dialog">Connection found!</string>
+    <string name="msg_disconnection_alert_dialog">Disconnect from the current contact?</string>
+    <string name="positive_button">Yes</string>
+    <string name="negative_button">No</string>
+
+
 
 </resources>
