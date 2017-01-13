@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
+        android:elevation="6dp"
         android:weightSum="4"
         android:focusable="false"
         android:visibility="visible">
