@@ -304,12 +304,6 @@ public class WiChatService extends Service {
                         Intent disconnectSuccessIntent = new Intent(CostantKeys.ACTION_DISCONNECT_SUCCESSFUL);
                         mLocalBroadcastManager.sendBroadcastSync(disconnectSuccessIntent);
 
-                        //A quanto pare, per poter permettere di connettersi ad altri dispositivi
-                        //dopo essersi disconnessi da quello precedente, c'è bisogno riavviare
-                        //la ricerca dei servizi.
-                        Log.i(LOG_TAG, "Riavvio la ricerca dei servizi.");
-
-                        discoverServices();
                     }
 
                     @Override
@@ -517,6 +511,12 @@ public class WiChatService extends Service {
                 }
 
                 Log.e(LOG_TAG, "Impossibile iniziare la ricerca dei peers: " + errore);
+
+                //Crea l'intent da inviare al componente in esecuzione
+                if (mMessagesListener || mContactsListener) {
+                    Intent rebootWifiIntent = new Intent(CostantKeys.ACTION_REBOOT_WIFI);
+                    mLocalBroadcastManager.sendBroadcast(rebootWifiIntent);
+                }
             }
         });
     }
@@ -550,6 +550,13 @@ public class WiChatService extends Service {
                 }
 
                 Log.e(LOG_TAG, "Impossibile iniziare la ricerca dei peers: " + errore);
+
+                //Crea l'intent da inviare al componente in esecuzione
+                if (mMessagesListener || mContactsListener) {
+                    Intent rebootWifiIntent = new Intent(CostantKeys.ACTION_REBOOT_WIFI);
+                    mLocalBroadcastManager.sendBroadcast(rebootWifiIntent);
+                }
+
             }
         });
     }
@@ -873,15 +880,9 @@ public class WiChatService extends Service {
 
                         conversingWith = null;
 
-                        //A quanto pare, per poter permettere di connettersi ad altri dispositivi
-                        //dopo essersi disconnessi da quello precedente, c'è bisogno di riavviare
-                        //la ricerca dei servizi.
-                        Log.i(LOG_TAG, "Riavvio la ricerca dei servizi.");
-
                     }
-                    //Ritorna a cercare i dispositivi nelle vicinanze, altrimenti
-                    //nessun altro dispositivo remoto si potrà connettere con quello
-                    //in uso.
+
+                    //Avvia la ricerca dei dispositivi
                     discoverServices();
 
                 }

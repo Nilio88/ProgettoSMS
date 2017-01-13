@@ -88,6 +88,9 @@ public interface CostantKeys {
     //Chiave costante utilizzata per indicare l'intent di rifiuto della connessione da parte del contatto.
     String ACTION_CONNECTION_REFUSED = "com.sms1516.porcelli.daniele.wichat.action.CONNECTION_REFUSED";
 
+    //Chiave costante utilizzata per indicare l'intent di invito a riavviare il Wi-Fi del dispositivo dell'utente
+    String ACTION_REBOOT_WIFI = "com.sms1516.porcelli.daniele.wichat.action.REBOOT_WIFI";
+
     //Chiave utilizzata per identificare le Shared Preferences dove vengono registrati i numeri di messaggi non letti per ogni contatto rilevato.
     String RECEIVED_MESSAGES_PREFS = "received_messages_prefs";
 

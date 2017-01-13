@@ -147,6 +147,7 @@ public class ConversationListActivity extends AppCompatActivity
         mIntentFilter.addAction(CostantKeys.ACTION_WIFI_TURNED_OFF);
         mIntentFilter.addAction(CostantKeys.ACTION_WIFI_TURNED_ON);
         mIntentFilter.addAction(CostantKeys.ACTION_STILL_CONNECTING);
+        mIntentFilter.addAction(CostantKeys.ACTION_REBOOT_WIFI);
 
         if (savedInstanceState != null) {
             mFirstRun = savedInstanceState.getBoolean(KEY_FIRSTRUN);
@@ -569,8 +570,10 @@ public class ConversationListActivity extends AppCompatActivity
         Log.i(LOG_TAG, "Click sul contatto con cui comunicare.");
 
         //Inserisci qui il codice per avviare la progress bar
-        dialog = tools.launchRingDialog(context, "Connessione in corso...");
-        dialog.show();
+        if (dialog == null || !dialog.isShowing()) {
+            dialog = tools.launchRingDialog(context, "Connessione in corso...");
+            dialog.show();
+        }
 
         if (macAddress != null)
             WiChatService.connectToClient(this, macAddress);
@@ -655,6 +658,7 @@ public class ConversationListActivity extends AppCompatActivity
                         //Questo permette rappresentare il dispositivo remoto con l'indirizzo MAC
                         //rilevato dal NSD.
                         connectedTo = device.deviceAddress;
+                        simpleItemRecyclerViewAdapter.notifyDataSetChanged();
                     }
 
                     //Messaggio da visualizzare nel Detail Fragment se l'app sta girando su un tablet in landscape
@@ -702,6 +706,8 @@ public class ConversationListActivity extends AppCompatActivity
                 //Inserisci qui il codice per eliminare dalla recyclerView il dispositivo con
                 //l'indirizzo MAC memorizzato in notAvailableDevice
                 if(notAvailableDevice != null) {
+                    String nomeContatto = (DummyContent.ITEM_MAP.get(notAvailableDevice)).name;
+                    Toast.makeText(ConversationListActivity.this, nomeContatto + " non è più disponibile.", Toast.LENGTH_LONG);
                     DummyContent.removeItem(notAvailableDevice);
                     posizione--;
                 }
@@ -780,6 +786,9 @@ public class ConversationListActivity extends AppCompatActivity
                 //crea qualcosa di più visivo, come cambiare il suo sfondo in blu...)
 
                 tools.closeRingDialog(dialog);
+                //ATTENZIONE: Ho appena scoperto che questo codice, oltre ad essere inutile, crea anche un bug
+                //e quindi verrà commentato. Sotto di esso verrà scritto il codice più idoneo al
+                //compito (userò solo Utils.isMacSimilar() ).
                 //Nota: devi scandire l'intera recyclerView e confrontare ciascun indirizzo MAC
                 //con quello recuperato dall'intent tramite la funzione Utils.getSimilarity().
                 //Memorizza ogni risultato che ottieni dal confronto con ciascun indirizzo MAC
@@ -787,7 +796,8 @@ public class ConversationListActivity extends AppCompatActivity
                 //risultato più basso.
                 //Poiché io visualizzo solo il contatto rilevato più di recente, mi arrangio con
                 //la funzione Utils.isMacSimilar().
-                String macConnected = mac;
+
+                /*String macConnected = mac;
                 int min = mac.length();
                 for(DummyContent.Device d : DummyContent.ITEMS) {
                     int similarity = Utils.getSimilarity(mac, d.mac);
@@ -795,8 +805,20 @@ public class ConversationListActivity extends AppCompatActivity
                         min = similarity;
                         macConnected = d.mac;
                     }
+                }*/
+
+                boolean trovato = false;
+                String macConnected = mac;
+                for (DummyContent.Device device: DummyContent.ITEMS) {
+                    if (Utils.isMacSimilar(device.mac, mac)) {
+                        trovato = true;
+                        macConnected = device.mac;
+                        break;
+                    }
                 }
-                DummyContent.changeStateConnection(macConnected, DummyContent.Device.CONNECTED);
+
+                if (trovato)
+                    DummyContent.changeStateConnection(macConnected, DummyContent.Device.CONNECTED);
 
                 connectedTo = macConnected;
                 simpleItemRecyclerViewAdapter.notifyDataSetChanged();
@@ -892,14 +914,21 @@ public class ConversationListActivity extends AppCompatActivity
                 //selezionato, bisogna prima disconnettersi dal contatto attuale. Se l'utente preme "Si", allora
                 //viene mandata la richiesta di disconnessione al Service, altrimenti tutto rimane come è.
 
-                AlertDialog.Builder builder = tools.createAlertDialog(context, getDrawable(R.drawable.disconnect_icon_24px), getString(R.string.title_disconnection_alert_dialog)
+                AlertDialog.Builder builder = tools.createAlertDialog(ConversationListActivity.this.context, ContextCompat.getDrawable(context, R.drawable.disconnect_icon_24px), getString(R.string.title_disconnection_alert_dialog)
                         , getString(R.string.msg_disconnection_alert_dialog));
 
                 builder.setPositiveButton(getString(R.string.positive_button)
                         , new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                //Chiude la progressDialog
+                                if (ConversationListActivity.this.dialog != null && ConversationListActivity.this.dialog.isShowing()) {
+                                    tools.closeRingDialog(ConversationListActivity.this.dialog);
+                                    Log.i(LOG_TAG, "ProgressDialog chiusa.");
+                                }
+
                                 WiChatService.disconnect(getApplicationContext());
+
                                 //Rimuovi la stringa "connesso" dalla TextView connesso_tv
                                 if(deviceToDisconnect != null && !DummyContent.ITEMS.isEmpty()) {
                                     DummyContent.changeStateConnection(deviceToDisconnect, DummyContent.Device.DISCONNECTED);
@@ -910,15 +939,18 @@ public class ConversationListActivity extends AppCompatActivity
                                 if (mTwoPane) {
                                     messageDetail.setText(R.string.message_detail);
                                 }
-                                startConversation(deviceToConnect);
-
                             }
                         });
                 builder.setNegativeButton(getString(R.string.negative_button)
                         , new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
+                                //Chiudi la progressDialog se è aperta
+                                Log.i(LOG_TAG, "Hai cliccato su No. Chiudo la progressDialog.");
+                                if (ConversationListActivity.this.dialog != null && ConversationListActivity.this.dialog.isShowing()) {
+                                    tools.closeRingDialog(ConversationListActivity.this.dialog);
+                                    Log.i(LOG_TAG, "ProgressDialog chiusa.");
+                                }
                             }
                         });
                 builder.create().show();
@@ -963,13 +995,18 @@ public class ConversationListActivity extends AppCompatActivity
                 mIsDone = false;
 
                 if (connectedTo != null) {
-                    int min = connectedTo.length();
+                    //Nota: questo codice può portare dei bug. Verrà commentato e sostituito.
+                    /*int min = connectedTo.length();
                     for (DummyContent.Device d : DummyContent.ITEMS) {
                         int similarity = Utils.getSimilarity(connectedTo, d.mac);
                         if (similarity < min) {
                             min = similarity;
                             connectedTo = d.mac;
                         }
+                    }*/
+                    for (DummyContent.Device device: DummyContent.ITEMS) {
+                        if (Utils.isMacSimilar(connectedTo, device.mac))
+                            connectedTo = device.mac;
                     }
                 }
 
@@ -997,9 +1034,15 @@ public class ConversationListActivity extends AppCompatActivity
                 //Intent ricevuto dopo aver premuto su "Disconnetti" se la disconnessione
                 //è avvenuta con successo.
                 connectedTo = null;
+            }
+            else if (action.equals(CostantKeys.ACTION_REBOOT_WIFI)) {
 
-                //Inserisci qui il codice che vuoi per notificare la riuscita disconnessione.
+                //Intent ricevuto quando il Wi-Fi P2P Manager della classe WiChatService
+                //segnala un errore durante una delle sue operazioni (principalmente durante
+                //l'esecuzione di discoverServices() ).
 
+                //Inserisci qui il codice che mostra una alertDialog che invita l'utente a
+                //riavviare il Wi-Fi del proprio dispositivo nella schermata delle impostazioni.
             }
         }
     }
@@ -1033,6 +1076,12 @@ public class ConversationListActivity extends AppCompatActivity
                     if(progressBar.isShown()) {
                         Log.i(LOG_TAG, "ProgressBar terminata");
                         progressBar.setVisibility(View.GONE);
+                    }
+
+                    //Mostra la textView indicante che non è stato trovato alcun
+                    //dispositivo se la lista di DummyContent è vuota
+                    if (DummyContent.ITEMS.isEmpty()) {
+                        noDeviceText.setVisibility(View.VISIBLE);
                     }
                 }
                 break;

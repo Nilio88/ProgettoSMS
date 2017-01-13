@@ -127,6 +127,7 @@ public class ConversationDetailFragment extends Fragment {
         mIntentFilter.addAction(CostantKeys.ACTION_SEND_MESSAGE);
         mIntentFilter.addAction(CostantKeys.ACTION_CONTACT_DISCONNECTED);
         mIntentFilter.addAction(CostantKeys.ACTION_CONTACT_AVAILABILITY);
+        mIntentFilter.addAction(CostantKeys.ACTION_REBOOT_WIFI);
     }
 
     @Override
@@ -439,6 +440,15 @@ public class ConversationDetailFragment extends Fragment {
                    // finish();
                 }
 
+            }
+            else if (action.equals(CostantKeys.ACTION_REBOOT_WIFI)) {
+
+                //Intent ricevuto quando il Wi-Fi P2P Manager della classe WiChatService
+                //segnala un errore durante una delle sue operazioni (principalmente durante
+                //l'esecuzione di discoverServices() ).
+
+                //Inserisci qui il codice che mostra una alertDialog che invita l'utente a
+                //riavviare il Wi-Fi del proprio dispositivo nella schermata delle impostazioni.
             }
         }
     }
