@@ -241,6 +241,7 @@ public class WiChatService extends Service {
                             mLocalBroadcastManager.sendBroadcast(intent);
                             Log.i(LOG_TAG, "Inviato intent per notificare la disconnessione di un dispositivo all'activity dei contatti.");
                         }
+                        mHandler.removeCallbacksAndMessages(null);
 
                     }
                 });
