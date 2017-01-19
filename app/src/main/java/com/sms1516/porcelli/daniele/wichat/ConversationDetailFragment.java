@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.sms1516.porcelli.daniele.wichat.dummy.DummyContent;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +40,7 @@ import java.util.List;
  * in two-pane mode (on tablets) or a {@link ConversationDetailActivity}
  * on handsets.
  */
-public class ConversationDetailFragment extends Fragment {
+public class ConversationDetailFragment extends Fragment implements Serializable {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -60,6 +61,7 @@ public class ConversationDetailFragment extends Fragment {
     private BroadcastReceiver mMessagesReceiver;
     private String mContactMacAddress;
     private EditText mMessageEditText;
+    private ImageButton imgBtnSendMessages;
     private IntentFilter mIntentFilter;
     private int mNumMessaggi;   //Memorizza il numero di messaggi caricati dal file di cronologia di conversazione.
     public static final int SENDER = 0;
@@ -176,6 +178,7 @@ public class ConversationDetailFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.conversation_detail, container, false);
         mMessageEditText = (EditText) rootView.findViewById(R.id.message_et);
+        imgBtnSendMessages = (ImageButton) rootView.findViewById(R.id.imgBtnSendMessages);
         snackbar = Snackbar.make(rootView.findViewById(R.id.coordinatorLayoutChat),
                 "Contatto disconnesso!", Snackbar.LENGTH_INDEFINITE);
         linearLayoutChat = (LinearLayout) rootView.findViewById(R.id.linearLayoutChat);
@@ -196,6 +199,14 @@ public class ConversationDetailFragment extends Fragment {
                 }
             }
         });
+
+        Log.i(LOG_TAG, "E' nullo? " + imgBtnSendMessages);
+        imgBtnSendMessages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage();
+            }
+        });
         // Show the dummy content as text in a TextView.
      //   if (mItem != null) {
        //     ((TextView) rootView.findViewById(R.id.conversation_detail)).setText(mItem.mac);
@@ -204,17 +215,18 @@ public class ConversationDetailFragment extends Fragment {
         return rootView;
     }
 
-    @Override
+   /* @Override
     public void onActivityCreated(Bundle saveInstanceState) {
         super.onActivityCreated(saveInstanceState);
         ImageButton imgBtnSendMessages = (ImageButton) getActivity().findViewById(R.id.imgBtnSendMessages);
+        Log.i(LOG_TAG, "E' nullo? " + imgBtnSendMessages);
         imgBtnSendMessages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
              sendMessage();
             }
         });
-    }
+    }*/
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         chatRoomRecyclerViewAdapter=new ChatRoomRecyclerViewAdapter(Message.ITEMS);

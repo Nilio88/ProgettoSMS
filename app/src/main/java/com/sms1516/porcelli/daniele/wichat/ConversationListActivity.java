@@ -18,6 +18,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -85,7 +86,7 @@ public class ConversationListActivity extends AppCompatActivity
     private boolean mIsDone = false;
     private Tools tools;
     private Dialog dialog;
-
+    private ConversationDetailFragment fragment = null;
     //Costante per il Log
     private static final String LOG_TAG = ConversationListActivity.class.getName();
 
@@ -96,7 +97,6 @@ public class ConversationListActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation_list);
-
         Log.i(LOG_TAG, "Sono in onCreate() della MainActivity.");
 
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -151,6 +151,8 @@ public class ConversationListActivity extends AppCompatActivity
 
         if (savedInstanceState != null) {
             mFirstRun = savedInstanceState.getBoolean(KEY_FIRSTRUN);
+            fragment = (ConversationDetailFragment) savedInstanceState.getSerializable("FRAGMENT");
+            removeFragment();
         }
         else {
             //Cancella i dispositivi rilevati e memorizzati in DummyContent.
@@ -314,6 +316,7 @@ public class ConversationListActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_FIRSTRUN, mFirstRun);
+        outState.putSerializable("FRAGMENT", fragment);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -479,6 +482,9 @@ public class ConversationListActivity extends AppCompatActivity
                 //Rimuovi la stringa "connesso" dalla TextView connesso_tv
                 if(connectedTo != null && !DummyContent.ITEMS.isEmpty()) {
                     DummyContent.changeStateConnection(connectedTo, DummyContent.Device.DISCONNECTED);
+                    if(mTwoPane) {
+                        removeFragment();
+                    }
                     simpleItemRecyclerViewAdapter.notifyDataSetChanged();
                 }
 
@@ -512,7 +518,7 @@ public class ConversationListActivity extends AppCompatActivity
 
         Bundle arguments = new Bundle();
         arguments.putString(CostantKeys.ACTION_START_CONVERSATION_ACTIVITY_EXTRA_MAC, indirizzoMAC);
-        ConversationDetailFragment fragment = new ConversationDetailFragment();
+        fragment = new ConversationDetailFragment();
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.conversation_detail_container, fragment)
@@ -521,6 +527,16 @@ public class ConversationListActivity extends AppCompatActivity
 
     }
 
+    private void removeFragment() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if(fragment != null) {
+            Log.i(LOG_TAG, "Il fragment non è nullo, quindi lo rimuovo");
+            transaction.remove(fragment);
+            transaction.commit();
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+            fragment = null;
+        }
+    }
     /**
      * Questo metodo non fa altro che avviare l'activity
      * per la conversazione con il dispositivo remoto.
