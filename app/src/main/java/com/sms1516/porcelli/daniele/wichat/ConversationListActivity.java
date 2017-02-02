@@ -71,7 +71,6 @@ public class ConversationListActivity extends AppCompatActivity
     private MessagesStore mMessagesStore;
     private SharedPreferences mMessagesReceivedPrefs;    //Memorizzerà, per ciascun dispositivo rilevato, il numero di messaggi scambiati con esso.
     private boolean mFirstRun = true;
-    public  MessageAlertMenagement messageAlertMenagement;
     private View viewSelected = null;
     ProgressBar progressBar;
     private NotificationManager notificationManager;
@@ -1096,7 +1095,10 @@ public class ConversationListActivity extends AppCompatActivity
 
                     //Mostra la textView indicante che non è stato trovato alcun
                     //dispositivo se la lista di DummyContent è vuota
-                    if (DummyContent.ITEMS.isEmpty()) {
+                    if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
+                        messageDetail.setText(R.string.text_empty);
+                        noDeviceText.setVisibility(View.GONE);
+                    } else if(DummyContent.ITEMS.isEmpty() && !mTwoPane) {
                         noDeviceText.setVisibility(View.VISIBLE);
                     }
                 }

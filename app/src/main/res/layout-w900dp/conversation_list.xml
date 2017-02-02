@@ -10,9 +10,9 @@
     android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
-    android:showDividers="middle"
     android:background="@color/activity_background"
-    tools:context="com.sms1516.porcelli.daniele.wichat.ConversationListActivity">
+    tools:context="com.sms1516.porcelli.daniele.wichat.ConversationListActivity"
+    android:showDividers="middle">
 
     <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="@dimen/item_width"

@@ -62,21 +62,23 @@ public class DummyContent {
     }
 
     public static void changeStateConnection(String mac, boolean state) {
-        Log.e("MAC -->", "CHANGE STATE CONNECTION: " + mac );
-        Log.e("SIZE --> " , "ITEMS_MAP: " + ITEM_MAP.size());
-        Log.e("SIZE --> " , "ITEMS: " + ITEMS.size());
-        Log.e("POSIZIONE --> " , "CHANGE ITEM: " + ITEM_MAP.get(mac).position);
+        if(DummyContent.ITEM_MAP.containsKey(mac)) {
+            Log.e("MAC -->", "CHANGE STATE CONNECTION: " + mac);
+            Log.e("SIZE --> ", "ITEMS_MAP: " + ITEM_MAP.size());
+            Log.e("SIZE --> ", "ITEMS: " + ITEMS.size());
+            Log.e("POSIZIONE --> ", "CHANGE ITEM: " + ITEM_MAP.get(mac).position);
 
 
-        Device device = ITEM_MAP.get(mac);
-        int position = Integer.parseInt(device.position);
+            Device device = ITEM_MAP.get(mac);
+            int position = Integer.parseInt(device.position);
 
-        if (device.connected) {
-            ITEM_MAP.put(mac, createDummyItem(position, mac, device.name, state, device.unreadCount));
-            ITEMS.set((position - 1), ITEM_MAP.get(mac));
-        } else {
-            ITEM_MAP.put(mac, createDummyItem(position, mac, device.name, state, device.unreadCount));
-            ITEMS.set((position - 1), ITEM_MAP.get(mac));
+            if (device.connected) {
+                ITEM_MAP.put(mac, createDummyItem(position, mac, device.name, state, device.unreadCount));
+                ITEMS.set((position - 1), ITEM_MAP.get(mac));
+            } else {
+                ITEM_MAP.put(mac, createDummyItem(position, mac, device.name, state, device.unreadCount));
+                ITEMS.set((position - 1), ITEM_MAP.get(mac));
+            }
         }
     }
 
