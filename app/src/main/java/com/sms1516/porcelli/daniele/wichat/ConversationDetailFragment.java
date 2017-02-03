@@ -1,6 +1,5 @@
 package com.sms1516.porcelli.daniele.wichat;
 
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,7 +9,6 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -28,7 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sms1516.porcelli.daniele.wichat.dummy.DummyContent;
+import com.sms1516.porcelli.daniele.wichat.dummy.Contacts;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -50,7 +48,7 @@ public class ConversationDetailFragment extends Fragment implements Serializable
     /**
      * The dummy content this fragment is presenting.
      */
-    private DummyContent.Device mItem;
+    private Contacts.Device mItem;
 
     private ChatRoomRecyclerViewAdapter chatRoomRecyclerViewAdapter = null;
     private MessagesStore mMessagesStore;
@@ -92,7 +90,7 @@ public class ConversationDetailFragment extends Fragment implements Serializable
          if (getArguments().containsKey(CostantKeys.ACTION_START_CONVERSATION_ACTIVITY_EXTRA_MAC)) {
             // Load the dummy content specified by the fragment
             // arguments.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(CostantKeys.ACTION_START_CONVERSATION_ACTIVITY_EXTRA_MAC));
+            mItem = Contacts.ITEM_MAP.get(getArguments().getString(CostantKeys.ACTION_START_CONVERSATION_ACTIVITY_EXTRA_MAC));
          }
 
         if(savedInstanceState == null) {
@@ -397,14 +395,14 @@ public class ConversationDetailFragment extends Fragment implements Serializable
 
                 String macDisconnected = disconnectedDevice;
                 int min = disconnectedDevice.length();
-                for(DummyContent.Device d : DummyContent.ITEMS) {
+                for(Contacts.Device d : Contacts.ITEMS) {
                     int similarity = Utils.getSimilarity(disconnectedDevice, d.mac);
                     if(similarity < min) {
                         min = similarity;
                         macDisconnected = d.mac;
                     }
                 }
-                DummyContent.changeStateConnection(macDisconnected, DummyContent.Device.DISCONNECTED);
+                Contacts.changeStateConnection(macDisconnected, Contacts.Device.DISCONNECTED);
                 Toast.makeText(context, "Contatto disconnesso", Toast.LENGTH_LONG).show();
                 linearLayoutChat.setVisibility(View.GONE);
                 snackbar.show();
@@ -435,7 +433,7 @@ public class ConversationDetailFragment extends Fragment implements Serializable
                     //ATTENZIONE: Qui si verifica un NullPointerException.
                     /*String macDisconnected = disconnectedDevice;
                     int min = disconnectedDevice.length();
-                    for(DummyContent.Device d : DummyContent.ITEMS) {
+                    for(Contacts.Device d : Contacts.ITEMS) {
                         int similarity = Utils.getSimilarity(disconnectedDevice, d.mac);
                         if(similarity < min) {
                             min = similarity;
@@ -444,7 +442,7 @@ public class ConversationDetailFragment extends Fragment implements Serializable
                     }*/
 
                     //Nel codice sottostante ho sostituito le occorrenze di macDisconnected con mContactMacAddress
-                    DummyContent.changeStateConnection(mContactMacAddress, DummyContent.Device.DISCONNECTED);
+                    Contacts.changeStateConnection(mContactMacAddress, Contacts.Device.DISCONNECTED);
                     Toast.makeText(context, "Il contatto non è più connesso", Toast.LENGTH_LONG).show();
                     linearLayoutChat.setVisibility(View.GONE);
                     snackbar.show();

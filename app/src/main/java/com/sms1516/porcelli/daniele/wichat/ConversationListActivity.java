@@ -37,7 +37,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sms1516.porcelli.daniele.wichat.dummy.DummyContent;
+import com.sms1516.porcelli.daniele.wichat.dummy.Contacts;
 
 import java.util.List;
 import android.os.Handler;
@@ -154,11 +154,11 @@ public class ConversationListActivity extends AppCompatActivity
             removeFragment();
         }
         else {
-            //Cancella i dispositivi rilevati e memorizzati in DummyContent.
+            //Cancella i dispositivi rilevati e memorizzati in Contacts.
             //Questo serve per risolvere il bug che mostra la textView noDeviceText
             //al riavvio di WiChat dopo che ha rilevato almeno un dispositivo remoto.
-            DummyContent.ITEM_MAP.clear();
-            DummyContent.ITEMS.clear();
+            Contacts.ITEM_MAP.clear();
+            Contacts.ITEMS.clear();
         }
 
         //Avvia WiChatService se non è in esecuzione.
@@ -203,8 +203,8 @@ public class ConversationListActivity extends AppCompatActivity
             public void onClick(View v) {
                     //Aggiona la lista dei contatti rilevati
                     //Cancella prima la lista dei contatti rilevati.
-                    DummyContent.ITEMS.clear();
-                    DummyContent.ITEM_MAP.clear();
+                    Contacts.ITEMS.clear();
+                    Contacts.ITEM_MAP.clear();
                     posizione = 0;
                     //  mConnesso.setText("");
 
@@ -215,10 +215,10 @@ public class ConversationListActivity extends AppCompatActivity
                     startTimeProgressBar();
                     WiChatService.discoverServices(context);
 
-                if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
+                if(Contacts.ITEMS.isEmpty() && mTwoPane) {
                     messageDetail.setText(R.string.text_empty);
                     noDeviceText.setVisibility(View.GONE);
-                } else if(!DummyContent.ITEMS.isEmpty() && !mTwoPane) {
+                } else if(!Contacts.ITEMS.isEmpty() && !mTwoPane) {
                     noDeviceText.setVisibility(View.GONE);
                 }
 
@@ -253,10 +253,10 @@ public class ConversationListActivity extends AppCompatActivity
         //Cancella le notifiche ricevute nella status bar mentre l'activity era inattiva.
         notificationManager.cancelAll();
 
-        if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
+        if(Contacts.ITEMS.isEmpty() && mTwoPane) {
             messageDetail.setText(R.string.text_empty);
             noDeviceText.setVisibility(View.GONE);
-        } else if(!DummyContent.ITEMS.isEmpty() && !mTwoPane) {
+        } else if(!Contacts.ITEMS.isEmpty() && !mTwoPane) {
             noDeviceText.setVisibility(View.GONE);
         }
         simpleItemRecyclerViewAdapter.notifyDataSetChanged();
@@ -268,10 +268,10 @@ public class ConversationListActivity extends AppCompatActivity
 
         Log.i(LOG_TAG, "Sono in onRestart() di MainActivity.");
 
-        if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
+        if(Contacts.ITEMS.isEmpty() && mTwoPane) {
             messageDetail.setText(R.string.text_empty);
             noDeviceText.setVisibility(View.GONE);
-        } else if(!DummyContent.ITEMS.isEmpty() && !mTwoPane) {
+        } else if(!Contacts.ITEMS.isEmpty() && !mTwoPane) {
             noDeviceText.setVisibility(View.GONE);
         }
         simpleItemRecyclerViewAdapter.notifyDataSetChanged();
@@ -319,7 +319,7 @@ public class ConversationListActivity extends AppCompatActivity
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        simpleItemRecyclerViewAdapter=new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS);
+        simpleItemRecyclerViewAdapter=new SimpleItemRecyclerViewAdapter(Contacts.ITEMS);
         recyclerView.setAdapter(simpleItemRecyclerViewAdapter);
     }
 
@@ -329,9 +329,9 @@ public class ConversationListActivity extends AppCompatActivity
      */
     public class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<DummyContent.Device> mValues;
+        private final List<Contacts.Device> mValues;
 
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.Device> items) {
+        public SimpleItemRecyclerViewAdapter(List<Contacts.Device> items) {
             mValues = items;
         }
 
@@ -376,7 +376,7 @@ public class ConversationListActivity extends AppCompatActivity
                         R.color.activity_background));
             }
 
-            if(mValues.get(position).unreadCount > DummyContent.Device.COUNT_DEFAULT) {
+            if(mValues.get(position).unreadCount > Contacts.Device.COUNT_DEFAULT) {
                 holder.mUnreadCount.setVisibility(View.VISIBLE);
                 holder.mUnreadCount.setText("" + mValues.get(position).unreadCount);
             } else {
@@ -428,7 +428,7 @@ public class ConversationListActivity extends AppCompatActivity
             public final TextView mUnreadCount;
             public final RelativeLayout mlistContent;
 
-            public DummyContent.Device mItem;
+            public Contacts.Device mItem;
 
             public ViewHolder(View view) {
                 super(view);
@@ -479,8 +479,8 @@ public class ConversationListActivity extends AppCompatActivity
                 WiChatService.disconnect(this);
 
                 //Rimuovi la stringa "connesso" dalla TextView connesso_tv
-                if(connectedTo != null && !DummyContent.ITEMS.isEmpty()) {
-                    DummyContent.changeStateConnection(connectedTo, DummyContent.Device.DISCONNECTED);
+                if(connectedTo != null && !Contacts.ITEMS.isEmpty()) {
+                    Contacts.changeStateConnection(connectedTo, Contacts.Device.DISCONNECTED);
                     if(mTwoPane) {
                         removeFragment();
                     }
@@ -512,7 +512,7 @@ public class ConversationListActivity extends AppCompatActivity
         Log.i(LOG_TAG, "Sto per aggiungere il fragment di conversazione.");
 
         //Azzero il numero dei messaggi ricevuti dal contatto non ancora letti.
-        DummyContent.updateUnreadCount(indirizzoMAC, DummyContent.Device.COUNT_DEFAULT);
+        Contacts.updateUnreadCount(indirizzoMAC, Contacts.Device.COUNT_DEFAULT);
         simpleItemRecyclerViewAdapter.notifyDataSetChanged();
 
         Bundle arguments = new Bundle();
@@ -545,7 +545,7 @@ public class ConversationListActivity extends AppCompatActivity
 
         //Azzero il numero dei messaggi ricevuti dal contatto non ancora letti.
 
-        DummyContent.updateUnreadCount(indirizzoMAC, DummyContent.Device.COUNT_DEFAULT);
+        Contacts.updateUnreadCount(indirizzoMAC, Contacts.Device.COUNT_DEFAULT);
         simpleItemRecyclerViewAdapter.notifyDataSetChanged();
 
         //Crea l'intent per avviare l'activity di conversazione
@@ -637,8 +637,8 @@ public class ConversationListActivity extends AppCompatActivity
                 fab.setVisibility(View.INVISIBLE);
                 snackbar.show();
 
-                DummyContent.ITEMS.clear();
-                DummyContent.ITEM_MAP.clear();
+                Contacts.ITEMS.clear();
+                Contacts.ITEM_MAP.clear();
                 posizione = 0;
                 simpleItemRecyclerViewAdapter.notifyDataSetChanged();
                 if(!mTwoPane) {
@@ -651,10 +651,10 @@ public class ConversationListActivity extends AppCompatActivity
                 Log.i(LOG_TAG, "Rilevato un nuovo contatto, ora lo aggiungo.");
                 WifiP2pDevice device = intent.getParcelableExtra(CostantKeys.ACTION_SEND_CONTACT_EXTRA);
 
-                if(!isDeviceDetected(DummyContent.ITEMS, device.deviceAddress)) {
+                if(!isDeviceDetected(Contacts.ITEMS, device.deviceAddress)) {
                     posizione++;
-                    DummyContent.addItem(DummyContent.createDummyItem(posizione, device.deviceAddress,
-                            device.deviceName, DummyContent.Device.DISCONNECTED, DummyContent.Device.COUNT_DEFAULT));
+                    Contacts.addItem(Contacts.createDummyItem(posizione, device.deviceAddress,
+                            device.deviceName, Contacts.Device.DISCONNECTED, Contacts.Device.COUNT_DEFAULT));
 
                     Log.i(LOG_TAG, "Indirizzo MAC del dispositivo rilevato: " + device.deviceAddress);
 
@@ -667,7 +667,7 @@ public class ConversationListActivity extends AppCompatActivity
                         //Segnala che il dispositivo remoto appena rilevato è connesso
                         //con quello nostro.
 
-                        DummyContent.changeStateConnection(device.deviceAddress, DummyContent.Device.CONNECTED);
+                        Contacts.changeStateConnection(device.deviceAddress, Contacts.Device.CONNECTED);
 
                         //Assegna a connectedTo l'indirizzo MAC del dispositivo già connesso.
                         //Questo permette rappresentare il dispositivo remoto con l'indirizzo MAC
@@ -694,7 +694,7 @@ public class ConversationListActivity extends AppCompatActivity
                     Log.i(LOG_TAG, "Messaggi non ancora letti da questo contatto: " + nuoviMessaggi);
 
                     if (nuoviMessaggi > 0) {
-                        DummyContent.updateUnreadCount(device.deviceAddress, nuoviMessaggi);
+                        Contacts.updateUnreadCount(device.deviceAddress, nuoviMessaggi);
                     }
                     simpleItemRecyclerViewAdapter.notifyDataSetChanged();*/
                 }
@@ -713,25 +713,25 @@ public class ConversationListActivity extends AppCompatActivity
                 //Recupera l'indirizzo MAC del dispositivo con cui non si è riusciti a connettere
                 String notAvailableDevice = intent.getStringExtra(CostantKeys.ACTION_CONTACT_NOT_AVAILABLE_EXTRA);
 
-                for(int i = 0; i < DummyContent.ITEMS.size(); i++) {
-                    Log.i("ITEM -->", "ITEM " + i + ": " + DummyContent.ITEMS.get(i));
+                for(int i = 0; i < Contacts.ITEMS.size(); i++) {
+                    Log.i("ITEM -->", "ITEM " + i + ": " + Contacts.ITEMS.get(i));
                 }
                 Log.i("MAC -->", "MAC: " + notAvailableDevice);
 
                 //Inserisci qui il codice per eliminare dalla recyclerView il dispositivo con
                 //l'indirizzo MAC memorizzato in notAvailableDevice
                 if(notAvailableDevice != null) {
-                    String nomeContatto = (DummyContent.ITEM_MAP.get(notAvailableDevice)).name;
+                    String nomeContatto = (Contacts.ITEM_MAP.get(notAvailableDevice)).name;
                     Toast.makeText(ConversationListActivity.this, nomeContatto + " non è più disponibile.", Toast.LENGTH_LONG);
-                    DummyContent.removeItem(notAvailableDevice);
+                    Contacts.removeItem(notAvailableDevice);
                     posizione--;
                 }
                 //Viene visualizzato un avviso nel caso in cui nessun dispositivo venisse rilevato
                 //sia in un tablet in landscape, sia in uno smartphone
-                if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
+                if(Contacts.ITEMS.isEmpty() && mTwoPane) {
                     messageDetail.setText(R.string.text_empty);
                     noDeviceText.setVisibility(View.GONE);
-                } else if(DummyContent.ITEMS.isEmpty() && !mTwoPane) {
+                } else if(Contacts.ITEMS.isEmpty() && !mTwoPane) {
                     noDeviceText.setVisibility(View.VISIBLE);
                 }
 
@@ -761,17 +761,17 @@ public class ConversationListActivity extends AppCompatActivity
 
                     //Aggiorna lo stato della connessione con il dispositivo remoto.
                     if (connectedTo != null) {
-                        if (DummyContent.ITEMS.size() > 0)
-                            DummyContent.changeStateConnection(connectedTo, DummyContent.Device.CONNECTED);
+                        if (Contacts.ITEMS.size() > 0)
+                            Contacts.changeStateConnection(connectedTo, Contacts.Device.CONNECTED);
                     }
                     else {
                         //Il contatto si è disconnesso mentre WiChat era in onStop().
                         //Aggiorna il contatto: toglie "connesso" dall'item della recyclerView.
-                        for (DummyContent.Device device: DummyContent.ITEMS) {
+                        for (Contacts.Device device: Contacts.ITEMS) {
 
                             if (device.connected) {
                                 //Rimuovi "connesso".
-                                DummyContent.changeStateConnection(device.mac, DummyContent.Device.DISCONNECTED);
+                                Contacts.changeStateConnection(device.mac, Contacts.Device.DISCONNECTED);
 
                                 //Poiché può essere connesso solo un dispositivo alla volta,
                                 //non c'è più bisogno di scandire la lista ITEMS e il ciclo può
@@ -814,7 +814,7 @@ public class ConversationListActivity extends AppCompatActivity
 
                 /*String macConnected = mac;
                 int min = mac.length();
-                for(DummyContent.Device d : DummyContent.ITEMS) {
+                for(Contacts.Device d : Contacts.ITEMS) {
                     int similarity = Utils.getSimilarity(mac, d.mac);
                     if(similarity < min) {
                         min = similarity;
@@ -824,7 +824,7 @@ public class ConversationListActivity extends AppCompatActivity
 
                 boolean trovato = false;
                 String macConnected = mac;
-                for (DummyContent.Device device: DummyContent.ITEMS) {
+                for (Contacts.Device device: Contacts.ITEMS) {
                     if (Utils.isMacSimilar(device.mac, mac)) {
                         trovato = true;
                         macConnected = device.mac;
@@ -833,7 +833,7 @@ public class ConversationListActivity extends AppCompatActivity
                 }
 
                 if (trovato)
-                    DummyContent.changeStateConnection(macConnected, DummyContent.Device.CONNECTED);
+                    Contacts.changeStateConnection(macConnected, Contacts.Device.CONNECTED);
 
                 connectedTo = macConnected;
                 simpleItemRecyclerViewAdapter.notifyDataSetChanged();
@@ -844,7 +844,7 @@ public class ConversationListActivity extends AppCompatActivity
                     //dalla recyclerView sfruttando l'indirizzo MAC appena estratto dall'intent
                     //(la variabile locale "mac").
 
-                    String nomeContatto = DummyContent.ITEM_MAP.get(macConnected).name;
+                    String nomeContatto = Contacts.ITEM_MAP.get(macConnected).name;
 
                     //Avvio l'activity di conversazione.
                     openConversationActivity(viewSelected, nomeContatto, connectedTo);
@@ -863,7 +863,7 @@ public class ConversationListActivity extends AppCompatActivity
 
                 String macDisconnected = disconnectedDevice;
                 int min = disconnectedDevice.length();
-                for(DummyContent.Device d : DummyContent.ITEMS) {
+                for(Contacts.Device d : Contacts.ITEMS) {
                     int similarity = Utils.getSimilarity(disconnectedDevice, d.mac);
                     if(similarity < min) {
                         min = similarity;
@@ -871,18 +871,18 @@ public class ConversationListActivity extends AppCompatActivity
                     }
                 }
 
-                if(!DummyContent.ITEMS.isEmpty()) {
-                    DummyContent.removeItem(macDisconnected);
+                if(!Contacts.ITEMS.isEmpty()) {
+                    Contacts.removeItem(macDisconnected);
                 }
                 posizione--;
                 connectedTo = null;
 
                 //Viene visualizzato un avviso nel caso in cui nessun dispositivo venisse rilevato
                 //sia in un tablet in landscape, sia in uno smartphone
-                if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
+                if(Contacts.ITEMS.isEmpty() && mTwoPane) {
                     messageDetail.setText(R.string.text_empty);
                     noDeviceText.setVisibility(View.GONE);
-                } else if(DummyContent.ITEMS.isEmpty() && !mTwoPane) {
+                } else if(Contacts.ITEMS.isEmpty() && !mTwoPane) {
                     noDeviceText.setVisibility(View.VISIBLE);
                 }
                 simpleItemRecyclerViewAdapter.notifyDataSetChanged();
@@ -909,14 +909,14 @@ public class ConversationListActivity extends AppCompatActivity
 
                 String macMittente = message.getSender();
                 int min = macMittente.length();
-                for(DummyContent.Device d : DummyContent.ITEMS) {
+                for(Contacts.Device d : Contacts.ITEMS) {
                     int similarity = Utils.getSimilarity(macMittente, d.mac);
                     if(similarity < min) {
                         min = similarity;
                         macMittente = d.mac;
                     }
                 }
-                DummyContent.updateUnreadCount(macMittente, DummyContent.ITEM_MAP.get(macMittente).unreadCount + 1);
+                Contacts.updateUnreadCount(macMittente, Contacts.ITEM_MAP.get(macMittente).unreadCount + 1);
                 simpleItemRecyclerViewAdapter.notifyDataSetChanged();
 
             } else if(action.equals(CostantKeys.ACTION_SEND_DISCONNECT_REQUEST)) {
@@ -945,8 +945,8 @@ public class ConversationListActivity extends AppCompatActivity
                                 WiChatService.disconnect(getApplicationContext());
 
                                 //Rimuovi la stringa "connesso" dalla TextView connesso_tv
-                                if(deviceToDisconnect != null && !DummyContent.ITEMS.isEmpty()) {
-                                    DummyContent.changeStateConnection(deviceToDisconnect, DummyContent.Device.DISCONNECTED);
+                                if(deviceToDisconnect != null && !Contacts.ITEMS.isEmpty()) {
+                                    Contacts.changeStateConnection(deviceToDisconnect, Contacts.Device.DISCONNECTED);
                                     simpleItemRecyclerViewAdapter.notifyDataSetChanged();
                                 }
 
@@ -987,7 +987,7 @@ public class ConversationListActivity extends AppCompatActivity
                 if(remoteDevice != null) {
                     String macConnected = remoteDevice;
                     int min = remoteDevice.length();
-                    for (DummyContent.Device d : DummyContent.ITEMS) {
+                    for (Contacts.Device d : Contacts.ITEMS) {
                         int similarity = Utils.getSimilarity(remoteDevice, d.mac);
                         if (similarity < min) {
                             min = similarity;
@@ -995,8 +995,8 @@ public class ConversationListActivity extends AppCompatActivity
                         }
                     }
 
-                    if(!DummyContent.ITEMS.isEmpty()) {
-                        DummyContent.changeStateConnection(macConnected, DummyContent.Device.CONNECTED);
+                    if(!Contacts.ITEMS.isEmpty()) {
+                        Contacts.changeStateConnection(macConnected, Contacts.Device.CONNECTED);
                         connectedTo = macConnected;
                     }
                     simpleItemRecyclerViewAdapter.notifyDataSetChanged();
@@ -1012,14 +1012,14 @@ public class ConversationListActivity extends AppCompatActivity
                 if (connectedTo != null) {
                     //Nota: questo codice può portare dei bug. Verrà commentato e sostituito.
                     /*int min = connectedTo.length();
-                    for (DummyContent.Device d : DummyContent.ITEMS) {
+                    for (Contacts.Device d : Contacts.ITEMS) {
                         int similarity = Utils.getSimilarity(connectedTo, d.mac);
                         if (similarity < min) {
                             min = similarity;
                             connectedTo = d.mac;
                         }
                     }*/
-                    for (DummyContent.Device device: DummyContent.ITEMS) {
+                    for (Contacts.Device device: Contacts.ITEMS) {
                         if (Utils.isMacSimilar(connectedTo, device.mac))
                             connectedTo = device.mac;
                     }
@@ -1068,7 +1068,7 @@ public class ConversationListActivity extends AppCompatActivity
      * @param mac da controllare se esiste già nell'array
      * @return true se il mac è stato trovato nell'array
      */
-    private boolean isDeviceDetected(List<DummyContent.Device> array, String mac) {
+    private boolean isDeviceDetected(List<Contacts.Device> array, String mac) {
         boolean detected = false;
         for(int i = 0; i  < array.size(); i++){
             if(mac.equalsIgnoreCase(array.get(i).mac)) {
@@ -1094,11 +1094,11 @@ public class ConversationListActivity extends AppCompatActivity
                     }
 
                     //Mostra la textView indicante che non è stato trovato alcun
-                    //dispositivo se la lista di DummyContent è vuota
-                    if(DummyContent.ITEMS.isEmpty() && mTwoPane) {
+                    //dispositivo se la lista di Contacts è vuota
+                    if(Contacts.ITEMS.isEmpty() && mTwoPane) {
                         messageDetail.setText(R.string.text_empty);
                         noDeviceText.setVisibility(View.GONE);
-                    } else if(DummyContent.ITEMS.isEmpty() && !mTwoPane) {
+                    } else if(Contacts.ITEMS.isEmpty() && !mTwoPane) {
                         noDeviceText.setVisibility(View.VISIBLE);
                     }
                 }
@@ -1135,7 +1135,7 @@ public class ConversationListActivity extends AppCompatActivity
         Log.i(LOG_TAG, "Messaggi non ancora letti da questo contatto: " + nuoviMessaggi);
 
         if (nuoviMessaggi > 0) {
-            DummyContent.updateUnreadCount(device, nuoviMessaggi);
+            Contacts.updateUnreadCount(device, nuoviMessaggi);
         }
         simpleItemRecyclerViewAdapter.notifyDataSetChanged();
     }

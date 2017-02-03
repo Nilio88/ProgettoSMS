@@ -12,7 +12,7 @@ import java.util.Map;
  * Android template wizards.
  * <p>
  */
-public class DummyContent {
+public class Contacts {
 
     /**
      * An array of sample (dummy) items.
@@ -24,7 +24,7 @@ public class DummyContent {
      */
     public static final Map<String, Device> ITEM_MAP = new HashMap<String, Device>();
 
-    public static final String LOG_TAG = DummyContent.class.getName();
+    public static final String LOG_TAG = Contacts.class.getName();
 
    /* private static final int COUNT = 25;
 
@@ -62,7 +62,7 @@ public class DummyContent {
     }
 
     public static void changeStateConnection(String mac, boolean state) {
-        if(DummyContent.ITEM_MAP.containsKey(mac)) {
+        if(Contacts.ITEM_MAP.containsKey(mac)) {
             Log.e("MAC -->", "CHANGE STATE CONNECTION: " + mac);
             Log.e("SIZE --> ", "ITEMS_MAP: " + ITEM_MAP.size());
             Log.e("SIZE --> ", "ITEMS: " + ITEMS.size());
